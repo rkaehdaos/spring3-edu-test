@@ -23,6 +23,7 @@ jobs:
 
       - name: Example step
         run: |
+          echo $SHELL
           pwd
           ls -alR gradle*
           chmod +x gradlew
@@ -40,7 +41,7 @@ jobs:
 
       - name: Build step using Gradle plugin # https://graalvm.github.io/native-build-tools/latest/gradle-plugin.html
         run: |
-          gradlew nativeCompile
+          ./gradlew nativeCompile
 
       - name: Upload binary
         uses: actions/upload-artifact@v2
