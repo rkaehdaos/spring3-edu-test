@@ -32,6 +32,7 @@ jobs:
           java --version
           native-image --version
           gradle -v
+          chmod +x ./gradlew
           gradlew --version
 
       - name: Build step using Gradle plugin # https://graalvm.github.io/native-build-tools/latest/gradle-plugin.html
