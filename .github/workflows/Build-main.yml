@@ -12,3 +12,4 @@ jobs:
         with:
           java-version: '21'      # 메이저만 사용시 21
           distribution: 'graalvm'     # 커뮤니티 사용시 'graalvm-community'
+          github-token: ${{ secrets.GITHUB_TOKEN }}
