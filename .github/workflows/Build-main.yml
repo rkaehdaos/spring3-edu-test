@@ -5,13 +5,18 @@ on:
       - main
 jobs:
   build:
-    runs-on: ubuntu-latest
+    name: HelloWorld on ${{ matrix.os }}
+    runs-on: ${{ matrix.os }}
+    strategy:
+      matrix:
+        os: [ macos-latest, windows-latest, ubuntu-latest ]
     steps:
+      - uses: actions/checkout@v4
 
       - uses: graalvm/setup-graalvm@v1
         with:
-          java-version: '21.0.2'      # 메이저만 사용시 21
-          distribution: 'graalvm'     # 커뮤니티 사용시 'graalvm-community'
+          java-version: '21'
+          distribution: 'graalvm'
           github-token: ${{ secrets.GITHUB_TOKEN }}
           native-image-job-reports: 'true'
 
@@ -25,5 +30,5 @@ jobs:
       - name: Upload binary
         uses: actions/upload-artifact@v2
         with:
-          name: helloworld-ubuntu-latest
+          name: helloworld-${{ matrix.os }}
           path: helloworld*
