@@ -10,8 +10,5 @@ jobs:
 
       - uses: graalvm/setup-graalvm@v1
         with:
-          java-version: '21.0.2'      # 메이저만 사용시 21
+          java-version: '21'      # 메이저만 사용시 21
           distribution: 'graalvm'     # 커뮤니티 사용시 'graalvm-community'
-          check-for-updates: 'true'
-          cache: 'gradle'
-          github-token: ${{ secrets.GITHUB_TOKEN }}
