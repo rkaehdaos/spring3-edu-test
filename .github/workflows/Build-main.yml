@@ -1,0 +1,30 @@
+name: Build and Push Docker image
+on:
+  push:
+    branches:
+      - main
+  pull_request:
+    branches:
+      - main
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout source code
+        uses: actions/checkout@master
+
+      - uses: graalvm/setup-graalvm@v1
+        with:
+          java-version: '21.0.2'      # 메이저만 사용시 21
+          distribution: 'graalvm'     # 커뮤니티 사용시 'graalvm-community'
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Example step
+        run: |
+          echo "GRAALVM_HOME: $GRAALVM_HOME"
+          echo "JAVA_HOME: $JAVA_HOME"
+          java --version
+          native-image --version
+
+      - name: Example step using Gradle plugin # https://graalvm.github.io/native-build-tools/latest/gradle-plugin.html
+        run: gradlew nativeCompile
