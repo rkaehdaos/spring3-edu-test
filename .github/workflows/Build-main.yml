@@ -1,4 +1,4 @@
-name: Build and Push Docker image
+name: Build with GitHub Action for GraalVM
 on:
   pull_request:
     branches:
