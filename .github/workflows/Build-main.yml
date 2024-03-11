@@ -23,6 +23,7 @@ jobs:
 
       - name: Example step
         run: |
+          pwd
           ls -alR gradle*
           chmod +x gradlew
           ls -alR gradle*
@@ -34,6 +35,7 @@ jobs:
           java --version
           native-image --version
           gradle -v
+          ./gradlew --version
           gradlew --version
 
       - name: Build step using Gradle plugin # https://graalvm.github.io/native-build-tools/latest/gradle-plugin.html
