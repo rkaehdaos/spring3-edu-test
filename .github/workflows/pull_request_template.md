@@ -1,0 +1,23 @@
+## Motivation 🤤
+
+밑의 예시를 바꿔서 작성해주세요.
+
+- (ex) 객체들의 연관관계를 기준으로 Entity를 초기 설계했습니다.
+- (ex) local에서 `Embedded H2`로 테이블 생성시, `MySql`과 동일한 형태를 얻도록 하였습니다.
+-
+
+<br/>
+
+## Key Changes 🔑
+
+- (ex) 생성된 H2 Table입니다.
+  ![이미지 예시](https://i.stack.imgur.com/BOyAL.png)
+- (ex) 정해져 있는 상수 값을 가지는 String 필드의 경우 Enum 선언이 맞다고 생각했습니다.
+
+<br/>
+
+## To Reviewers 🙏
+
+- (ex) `MySQL` 테이블과 비교하면서 검토 및 리뷰 부탁드립니다.
+
+<br/>
