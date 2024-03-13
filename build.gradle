@@ -21,6 +21,7 @@ configurations {
 
 repositories {
     mavenCentral()
+    gradlePluginPortal()
 }
 
 ext {
@@ -95,3 +96,8 @@ hibernate {
     }
 }
 
+nativeBuild {
+
+}
+nativeCompile {
+}
