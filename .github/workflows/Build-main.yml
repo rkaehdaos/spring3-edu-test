@@ -38,7 +38,7 @@ jobs:
           native-image --version
           gradle -v
           ./gradlew --version
-          ./gradlew nativeCompile
+          ./gradlew clean nativeCompile
       
 
       - name: Build step using Gradle plugin for Windows
@@ -49,23 +49,14 @@ jobs:
           java --version
           native-image --version
           gradle -v
-          gradlew.bat --version
-          echo "JAVA_HOME: %JAVA_HOME%"
-          echo "GRADLE_HOME: %GRADLE_HOME%"
-          echo "GRAALVM_HOME: %GRAALVM_HOME%"
-          echo "NATIVE_IMAGE_CONFIG_FILE: %NATIVE_IMAGE_CONFIG_FILE%"
           echo "일반 정보"
           [System.Environment]::OSVersion
           echo "상세 정보"
           Get-ComputerInfo | Select-Object WindowsProductName, WindowsVersion, OsHardwareAbstractionLayer
-          gradlew.bat clean nativeCompile
-
-      - name: Build step using Gradle plugin # https://graalvm.github.io/native-build-tools/latest/gradle-plugin.html
-        run: |
-          ./gradlew nativeCompile
+          gradle clean nativeCompile
 
       - name: Upload binary
         uses: actions/upload-artifact@v2
         with:
           name: spring3-edu-test-${{ matrix.os }}
-          path: spring3-edu-test*
+          path: spring3-edu-test/build/native/nativeCompile
