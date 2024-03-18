@@ -41,6 +41,7 @@ jobs:
       
 
       - name: Example step for Windows
+        if: matrix.os == 'windows-latest'
         run: |
           CD
           ver
