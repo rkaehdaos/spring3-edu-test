@@ -44,13 +44,16 @@ jobs:
         if: matrix.os == 'windows-latest'
         run: |
           CD
-          ver
           dir /s gradle*          
           gradlew.bat --version
           echo "JAVA_HOME: %JAVA_HOME%"
           echo "GRADLE_HOME: %GRADLE_HOME%"
-          echo "PATH: %PATH%"
-          
+          echo "GRAALVM_HOME: %GRAALVM_HOME%"
+          echo "NATIVE_IMAGE_CONFIG_FILE: %NATIVE_IMAGE_CONFIG_FILE%"
+          echo "일반 정보"
+          [System.Environment]::OSVersion
+          echo "상세 정보"
+          Get-ComputerInfo | Select-Object WindowsProductName, WindowsVersion, OsHardwareAbstractionLayer
 
       - name: Build step using Gradle plugin # https://graalvm.github.io/native-build-tools/latest/gradle-plugin.html
         run: |
