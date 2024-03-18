@@ -5,7 +5,7 @@ on:
       - main
 jobs:
   build:
-    name: HelloWorld on ${{ matrix.os }}
+    name: Native Build on ${{ matrix.os }}
     runs-on: ${{ matrix.os }}
     strategy:
       matrix:
@@ -21,7 +21,8 @@ jobs:
           github-token: ${{ secrets.GITHUB_TOKEN }}
           native-image-job-reports: 'true'
 
-      - name: Example step
+      - name: Execute permission to gradlew for Ubuntu or MacOS
+        if: matrix.os == 'ubuntu-latest' || matrix.os == 'macos-latest'
         run: |
           echo $SHELL
           pwd
@@ -37,7 +38,18 @@ jobs:
           native-image --version
           gradle -v
           ./gradlew --version
-          gradlew --version
+      
+
+      - name: Example step for Windows
+        run: |
+          CD
+          ver
+          dir /s gradle*          
+          gradlew.bat --version
+          echo "JAVA_HOME: %JAVA_HOME%"
+          echo "GRADLE_HOME: %GRADLE_HOME%"
+          echo "PATH: %PATH%"
+          
 
       - name: Build step using Gradle plugin # https://graalvm.github.io/native-build-tools/latest/gradle-plugin.html
         run: |
