@@ -21,7 +21,7 @@ jobs:
           github-token: ${{ secrets.GITHUB_TOKEN }}
           native-image-job-reports: 'true'
 
-      - name: Execute permission to gradlew for Ubuntu or MacOS
+      - name: Build step using Gradle plugin for Ubuntu or MacOS
         if: matrix.os == 'ubuntu-latest' || matrix.os == 'macos-latest'
         run: |
           echo $SHELL
@@ -38,14 +38,18 @@ jobs:
           native-image --version
           gradle -v
           ./gradlew --version
+          ./gradlew nativeCompile
       
 
-      - name: Example step for Windows
+      - name: Build step using Gradle plugin for Windows
         if: matrix.os == 'windows-latest'
         run: |
           CD
-          dir -Recurse -Filter gradle*          
-          ./gradlew --version
+          dir -Recurse -Filter gradle*   
+          java --version
+          native-image --version
+          gradle -v
+          gradlew.bat --version
           echo "JAVA_HOME: %JAVA_HOME%"
           echo "GRADLE_HOME: %GRADLE_HOME%"
           echo "GRAALVM_HOME: %GRAALVM_HOME%"
@@ -54,6 +58,7 @@ jobs:
           [System.Environment]::OSVersion
           echo "상세 정보"
           Get-ComputerInfo | Select-Object WindowsProductName, WindowsVersion, OsHardwareAbstractionLayer
+          gradlew.bat clean nativeCompile
 
       - name: Build step using Gradle plugin # https://graalvm.github.io/native-build-tools/latest/gradle-plugin.html
         run: |
