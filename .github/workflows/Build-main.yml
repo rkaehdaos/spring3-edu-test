@@ -41,14 +41,14 @@ jobs:
           ./gradlew clean nativeCompile
       
 
-      - name: Build step using Gradle plugin for Windows
+      - name: Build step using Gradle plugin for Windows powershell
         if: matrix.os == 'windows-latest'
         run: |
-          CD
+          Get-Location
           dir -Recurse -Filter gradle*   
           java --version
           native-image --version
-          gradle -v
+          ./gradlew -v
           echo "일반 정보"
           [System.Environment]::OSVersion
           echo "상세 정보"
