@@ -23,21 +23,18 @@ jobs:
           native-image-job-reports: 'true'
           cache: 'gradle'
 
-      - name: get project version and give permission when env is not windows
+      - name: get project version
         id: get_version
-        run: |
-          if [ "${{ matrix.os }}" = "windows-latest" ]; then
-            $version = ./gradlew properties -q | Select-String "version:" -CaseSensitive | ForEach-Object { $_ -replace "version: ", "" }
-            echo "::set-output name=version::$version"
-          else
-            chmod +x ./gradlew
-            echo "::set-output name=version::$(./gradlew properties -q | grep 'version:' | cut -d ' ' -f2)"
-          fi
+        run: echo "::set-output name=version::$(./gradlew properties -q | grep 'version:' | cut -d ' ' -f2)"
         shell: bash
-        if: ${{ always() }}
+
 
       - name: Build step using Gradle plugin
-        run: ./gradlew clean nativeCompile
+        run: |
+          if [ "${{ matrix.os }}" != "windows-latest" ]; then
+            chmod +x ./gradlew
+          fi
+          ./gradlew clean nativeCompile
 
       - name: Upload binary
         uses: actions/upload-artifact@v2
