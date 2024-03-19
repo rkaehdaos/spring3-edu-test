@@ -14,7 +14,8 @@ jobs:
       - name: Checkout source code
         uses: actions/checkout@master
 
-      - uses: graalvm/setup-graalvm@v1
+      - name : ''
+        uses: graalvm/setup-graalvm@v1
         with:
           java-version: '21'
           distribution: 'graalvm'
@@ -22,19 +23,18 @@ jobs:
           native-image-job-reports: 'true'
           cache: 'gradle'
 
-      - name: get project version and set gradlew permission to excute for Ubuntu or MacOS
+      - name: get project version and give permission when env is not windows
         id: get_version
-        if: matrix.os == 'ubuntu-latest' || matrix.os == 'macos-latest'
         run: |
-          chmod +x ./gradlew
-          echo "::set-output name=version::$(./gradlew properties -q | grep 'version:' | cut -d ' ' -f2)"
-
-      - name: get project version for Windows
-        id: get_version
-        if: matrix.os == 'windows-latest'
-        run: |
-          $version = ./gradlew properties -q | Select-String "version:" -CaseSensitive | ForEach-Object { $_ -replace "version: ", "" }
-          echo "::set-output name=version::$version"
+          if [ "${{ matrix.os }}" = "windows-latest" ]; then
+            $version = ./gradlew properties -q | Select-String "version:" -CaseSensitive | ForEach-Object { $_ -replace "version: ", "" }
+            echo "::set-output name=version::$version"
+          else
+            chmod +x ./gradlew
+            echo "::set-output name=version::$(./gradlew properties -q | grep 'version:' | cut -d ' ' -f2)"
+          fi
+        shell: bash
+        if: ${{ always() }}
 
       - name: Build step using Gradle plugin
         run: ./gradlew clean nativeCompile
