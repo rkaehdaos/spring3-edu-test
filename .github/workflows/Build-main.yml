@@ -31,7 +31,7 @@ jobs:
 
       - name: Build step using Gradle plugin
         run: |
-          if [ "${{ matrix.os }}" != "windows-latest" ]; then
+          if ( "${{ matrix.os }}" != "windows-latest" ) then
             chmod +x ./gradlew
           fi
           ./gradlew clean nativeCompile
