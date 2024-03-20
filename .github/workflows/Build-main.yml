@@ -28,13 +28,12 @@ jobs:
         run: echo "::set-output name=version::$(./gradlew properties -q | grep 'version:' | cut -d ' ' -f2)"
         shell: bash
 
+      - name: give permission to execute Gradlew when env is not windows
+        if: matrix.os == 'ubuntu-latest' || matrix.os == 'macos-latest'
+        run: chmod +x ./gradlew
 
       - name: Build step using Gradle plugin
-        run: |
-          if ( "${{ matrix.os }}" != "windows-latest" ) then
-            chmod +x ./gradlew
-          fi
-          ./gradlew clean nativeCompile
+        run:  ./gradlew clean nativeCompile
 
       - name: Upload binary
         uses: actions/upload-artifact@v2
