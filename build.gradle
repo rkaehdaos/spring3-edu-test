@@ -96,7 +96,7 @@ tasks.named('test') {
 
 hibernate {
     enhancement {
-        enableAssociationManagement = true
+        enableAssociationManagement.convention(true)
     }
 }
 graalvmNative {
