@@ -40,6 +40,18 @@ jobs:
         with:
           name: spring3-edu-test-${{ steps.get_version.outputs.version }}-${{ matrix.os }}
           path: build/native/nativeCompile/spring3-edu-test*
+
+      - name: Notification
+        uses: 8398a7/action-slack@v3
+        with:
+          status: ${{ job.status }}
+          author_name: GeunChang Ahn
+          fields: repo,message,commit,author,action,eventName,ref,workflow,job,took,pullRequest # selectable (default: repo,message)
+        #          mention: here
+        #          if_mention: failure, cancelled
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK_URL }}
 #
 #  release:
 #    needs: build
