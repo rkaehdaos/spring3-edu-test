@@ -20,7 +20,7 @@ jobs:
       - name: test
         run: |
           chmod +x ./gradlew
-          ./gradlew clean jacocoTestCoverageVerification --stacktrace --no-daemon
+          ./gradlew clean test jacocoTestCoverageVerification --stacktrace --no-daemon
 
       - name: Log coverage percentage
         run: |
