@@ -1,7 +1,5 @@
 name: Build with GitHub Action for GraalVM
-on:
-  push:
-    branches: ['*']
+on: push
 
 jobs:
   gradlew_test:
