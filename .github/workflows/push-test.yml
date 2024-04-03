@@ -1,0 +1,40 @@
+name: Build with GitHub Action for GraalVM
+on:
+  push:
+    branches: [*]
+
+jobs:
+  gradlew_test:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout source code
+        uses: actions/checkout@master
+
+      - name: test
+        run: |
+          chmod +x ./gradlew
+          ./gradlew clean jacocoTestCoverageVerification --stacktrace
+
+      - name: Log coverage percentage
+        run: |
+          echo "coverage = ${{ steps.jacoco.outputs.coverage }}"
+          echo "branch coverage = ${{ steps.jacoco.outputs.branches }}"
+
+      - name: Generate JaCoCo Badge
+        uses: cicirello/jacoco-badge-generator@v2.11.0
+        with:
+          generate-branches-badge: true
+          jacoco-csv-file: build/reports/jacoco/test/jacocoTestReport.csv
+
+
+      - name: Notification
+        uses: 8398a7/action-slack@v3
+        with:
+          status: ${{ job.status }}
+          author_name: GeunChang Ahn
+          fields: repo,message,commit,author,action,eventName,ref,workflow,job,took,pullRequest # selectable (default: repo,message)
+        #          mention: here
+        #          if_mention: failure, cancelled
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK_URL }}
