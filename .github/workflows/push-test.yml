@@ -9,18 +9,24 @@ jobs:
         uses: actions/checkout@master
 
       - uses: actions/setup-java@v4
+        id: setup-java-21
         with:
           distribution: 'zulu' # See 'Supported distributions' for available options
           java-version: '21'
-          cache: 'gradle'
+#          cache: 'gradle' # 밑의 액션의 default가 caching
 #          cache-dependency-path: | # optional
 #            sub-project/*.gradle*
 #            sub-project/**/gradle-wrapper.properties
 
+      - name: Setup Gradle 8.7+
+        id: setup-gradle
+        uses: gradle/actions/setup-gradle@v3
+        with:
+          gradle-version: 8.7
+
       - name: test
-        run: |
-          chmod +x ./gradlew
-          ./gradlew clean test jacocoTestCoverageVerification --stacktrace --no-daemon
+        run: gradle clean test
+#          ./gradlew clean test jacocoTestCoverageVerification --stacktrace --no-daemon
 
       - name: Generate JaCoCo Badge
         id: jacoco
