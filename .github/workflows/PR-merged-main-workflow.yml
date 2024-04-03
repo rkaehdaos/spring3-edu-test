@@ -2,15 +2,111 @@ name: After PR Merge
 
 on:
   pull_request:
-    branches:
-      - main
-    types:
-      - closed
+    branches: [main]
+    types: [closed]
+
 jobs:
   build:
-    runs-on: ubuntu-latest
+    name: Native Build on ${{ matrix.os }}
     if: github.event.pull_request.merged == true
+    runs-on: ${{ matrix.os }}
+    strategy:
+      matrix:
+        os: [ macos-latest, windows-latest, ubuntu-latest ]
     steps:
-      - uses: actions/checkout@v2
-      - name: Run a script after PR merge
-        run: echo "PR was merged!"
+      - name: Checkout source code
+        uses: actions/checkout@master
+
+#       https://github.com/marketplace/actions/github-action-for-graalvm
+      - name : 'GitHub Action for GraalVM'
+        uses: graalvm/setup-graalvm@v1
+        with:
+          java-version: '21'
+          distribution: 'graalvm'
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+          native-image-job-reports: 'true'
+          cache: 'gradle'
+
+      - name: get project version
+        id: get_version
+        run: echo "::set-output name=version::$(./gradlew properties -q | grep 'version:' | cut -d ' ' -f2)"
+        shell: bash
+
+      - name: give permission to execute Gradlew when env is not windows
+        if: matrix.os == 'ubuntu-latest' || matrix.os == 'macos-latest'
+        run: chmod +x ./gradlew
+
+      - name: Example step
+        run: |
+            echo "GRAALVM_HOME: $GRAALVM_HOME"
+            echo "JAVA_HOME: $JAVA_HOME"
+            javac --version
+            java --version
+            native-image --version
+            ./gradlew -v
+
+      - name: Build step using Gradle plugin
+        run:  ./gradlew clean nativeCompile
+
+      - name: Upload binary
+        uses: actions/upload-artifact@v2
+        with:
+          name: spring3-edu-test-${{ steps.get_version.outputs.version }}-${{ matrix.os }}
+          path: build/native/nativeCompile/spring3-edu-test*
+
+      - name: Notification
+        uses: 8398a7/action-slack@v3
+        with:
+          status: ${{ job.status }}
+          author_name: GeunChang Ahn
+          fields: repo,message,commit,author,action,eventName,ref,workflow,job,took,pullRequest # selectable (default: repo,message)
+        #          mention: here
+        #          if_mention: failure, cancelled
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK_URL }}
+#
+#  release:
+#    needs: build
+#    runs-on: ubuntu-latest
+#    steps:
+#
+#      - name: Create release
+#        id: create_release
+#        uses: actions/create-release@v1
+#        env:
+#          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+#        with:
+#          tag_name: ${{ steps.get_version.outputs.version }}
+#          release_name: Release ${{ steps.get_version.outputs.version }}
+#          draft: true
+#          prerelease: false
+#
+#      - name: Download artifact (Ubuntu)
+#        uses: actions/download-artifact@v2
+#        with:
+#          name: spring3-edu-test-ubuntu-latest
+#
+#      - name: Download artifact (Windows)
+#        uses: actions/download-artifact@v2
+#        with:
+#          name: spring3-edu-test-windows-latest
+#
+#      - name: Download artifact (Windows)
+#        uses: actions/download-artifact@v2
+#        with:
+#          name: spring3-edu-test-windows-latest
+#
+#
+#      - name: Upload release asset
+#        uses: actions/upload-release-asset@v1
+#        env:
+#          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+#        with:
+#          upload_url: ${{ steps.create_release.outputs.upload_url }}
+#          asset_path: ./my-artifact
+#          asset_name: my-artifact.zip
+#          asset_content_type: application/zip
+#
+
+
