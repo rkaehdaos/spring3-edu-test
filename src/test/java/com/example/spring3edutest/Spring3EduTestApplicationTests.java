@@ -10,5 +10,6 @@ class Spring3EduTestApplicationTests {
     @Test
     void contextLoads() {
         log.debug("Just Test");
+        Spring3EduTestApplication.main(new String[]{});
     }
 }
