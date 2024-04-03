@@ -13,11 +13,14 @@ jobs:
           distribution: 'zulu' # See 'Supported distributions' for available options
           java-version: '21'
           cache: 'gradle'
+#          cache-dependency-path: | # optional
+#            sub-project/*.gradle*
+#            sub-project/**/gradle-wrapper.properties
 
       - name: test
         run: |
           chmod +x ./gradlew
-          ./gradlew clean jacocoTestCoverageVerification --stacktrace
+          ./gradlew clean jacocoTestCoverageVerification --stacktrace --no-daemon
 
       - name: Log coverage percentage
         run: |
@@ -29,7 +32,6 @@ jobs:
         with:
           generate-branches-badge: true
           jacoco-csv-file: build/reports/jacoco/test/jacocoTestReport.csv
-
 
       - name: Notification
         uses: 8398a7/action-slack@v3
