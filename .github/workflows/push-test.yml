@@ -25,7 +25,7 @@ jobs:
           gradle-version: 8.7
 
       - name: test
-        run: gradle clean test
+        run: gradle clean test --stacktrace --no-daemon
 #          ./gradlew clean test jacocoTestCoverageVerification --stacktrace --no-daemon
 
       - name: Generate JaCoCo Badge
