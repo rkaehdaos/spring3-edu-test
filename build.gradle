@@ -117,3 +117,6 @@ graalvmNative {
 test {
     finalizedBy jacocoTestReport
 }
+jacocoTestReport {
+    dependsOn test
+}
