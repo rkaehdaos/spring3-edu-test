@@ -1,3 +1,13 @@
 # workflow test for newbee
 
-[![Build with GitHub Action for GraalVM](https://github.com/rkaehdaos/spring3-edu-test/actions/workflows/Build-main.yml/badge.svg?branch=main)](https://github.com/rkaehdaos/spring3-edu-test/actions/workflows/Build-main.yml)
+# badge test
+
+## coverage
+![Coverage](.github/badges/jacoco.svg)
+
+## branch coverage badge
+![Branches](.github/badges/branches.svg)
+
+## 배지의 디렉토리 및 파일명을 변경
+[![Coverage](.github/badges/jacoco.svg)](https://github.com/rkaehdaos/spring3-edu-test/actions/workflows/PR-workflow.yml)
+
