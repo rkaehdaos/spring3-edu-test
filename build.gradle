@@ -118,9 +118,17 @@ test { finalizedBy jacocoTestReport }
 jacocoTestReport { dependsOn test }
 jacocoTestCoverageVerification {
     violationRules {
+        rule { limit { minimum = 0.9 } }
         rule {
+            enabled = false // rule 비활성화 -> 해당 룰이 적용되지 않음
+            element = 'CLASS'
+            includes = ['com.example.spring3edutest.*'] //해당 패키지의 CLASS에 룰 적용
+
             limit {
-                minimum = 0.6
+                counter = 'Line'
+                value = 'TOTALCOUNT'
+                minimum = 0.1
+                maximum = 0.5
             }
         }
     }
