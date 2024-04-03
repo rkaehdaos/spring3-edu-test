@@ -15,6 +15,17 @@ jobs:
           chmod +x ./gradlew
           ./gradlew clean jacocoTestCoverageVerification --stacktrace
 
+      - name: Add coverage to PR
+        id: jacoco
+        uses: madrapps/jacoco-report@v1.6.1
+        with:
+          paths: |
+            ${{ github.workspace }}/**/build/reports/jacoco/prodNormalDebugCoverage/prodNormalDebugCoverage.xml,
+            ${{ github.workspace }}/**/build/reports/jacoco/**/debugCoverage.xml
+          token: ${{ secrets.GITHUB_TOKEN }}
+          min-coverage-overall: 70
+          min-coverage-changed-files: 90
+
       - name: Notification
         uses: 8398a7/action-slack@v3
         with:
