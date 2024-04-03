@@ -5,41 +5,15 @@ on:
       - main
 jobs:
   build:
-    name: Native Build on ${{ matrix.os }}
-    runs-on: ${{ matrix.os }}
-    strategy:
-      matrix:
-        os: [ macos-latest, windows-latest, ubuntu-latest ]
+    runs-on: ubuntu-latest
     steps:
       - name: Checkout source code
         uses: actions/checkout@master
 
-      - name : ''
-        uses: graalvm/setup-graalvm@v1
-        with:
-          java-version: '21'
-          distribution: 'graalvm'
-          github-token: ${{ secrets.GITHUB_TOKEN }}
-          native-image-job-reports: 'true'
-          cache: 'gradle'
-
-      - name: get project version
-        id: get_version
-        run: echo "::set-output name=version::$(./gradlew properties -q | grep 'version:' | cut -d ' ' -f2)"
-        shell: bash
-
-      - name: give permission to execute Gradlew when env is not windows
-        if: matrix.os == 'ubuntu-latest' || matrix.os == 'macos-latest'
-        run: chmod +x ./gradlew
-
-      - name: Build step using Gradle plugin
-        run:  ./gradlew clean nativeCompile
-
-      - name: Upload binary
-        uses: actions/upload-artifact@v2
-        with:
-          name: spring3-edu-test-${{ steps.get_version.outputs.version }}-${{ matrix.os }}
-          path: build/native/nativeCompile/spring3-edu-test*
+      - name: test
+        run: |
+          chmod +x ./gradlew
+          ./gradlew clean jacocoTestCoverageVerification --stacktrace
 
       - name: Notification
         uses: 8398a7/action-slack@v3
@@ -52,48 +26,3 @@ jobs:
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK_URL }}
-#
-#  release:
-#    needs: build
-#    runs-on: ubuntu-latest
-#    steps:
-#
-#      - name: Create release
-#        id: create_release
-#        uses: actions/create-release@v1
-#        env:
-#          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-#        with:
-#          tag_name: ${{ steps.get_version.outputs.version }}
-#          release_name: Release ${{ steps.get_version.outputs.version }}
-#          draft: true
-#          prerelease: false
-#
-#      - name: Download artifact (Ubuntu)
-#        uses: actions/download-artifact@v2
-#        with:
-#          name: spring3-edu-test-ubuntu-latest
-#
-#      - name: Download artifact (Windows)
-#        uses: actions/download-artifact@v2
-#        with:
-#          name: spring3-edu-test-windows-latest
-#
-#      - name: Download artifact (Windows)
-#        uses: actions/download-artifact@v2
-#        with:
-#          name: spring3-edu-test-windows-latest
-#
-#
-#      - name: Upload release asset
-#        uses: actions/upload-release-asset@v1
-#        env:
-#          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-#        with:
-#          upload_url: ${{ steps.create_release.outputs.upload_url }}
-#          asset_path: ./my-artifact
-#          asset_name: my-artifact.zip
-#          asset_content_type: application/zip
-#
-
-
