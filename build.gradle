@@ -114,9 +114,16 @@ graalvmNative {
     }
 }
 
-test { finalizedBy jacocoTestReport }
+test {
+    finalizedBy jacocoTestReport
+}
+
+nativeTest {
+    finalizedBy jacocoTestReport
+}
+
+
 jacocoTestReport {
-    dependsOn test
     reports {
         csv.setRequired(true)
     }
