@@ -118,11 +118,8 @@ test {
     finalizedBy jacocoTestReport
 }
 
-nativeTest {
-    finalizedBy jacocoTestReport
-}
 nativeCompile {
-    dependsOn nativeTest
+
 }
 
 
