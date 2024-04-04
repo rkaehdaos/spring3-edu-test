@@ -1,4 +1,4 @@
-name: Build with GitHub Action for GraalVM
+name: Gradle test On GitHub Action
 on: push
 
 permissions:
