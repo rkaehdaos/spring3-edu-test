@@ -1,41 +1,86 @@
-name: Build with GitHub Action for GraalVM
-on:
-  pull_request:
-    branches:
-      - main
+name: Native Test On GitHub Action With GraalVM
+on: pull_request
+
+permissions:
+  contents: write
+
 jobs:
-  build:
-    runs-on: ubuntu-latest
+  PR_NativeTest:
+    name: Native Test on ${{ matrix.os }}
+    runs-on: ${{ matrix.os }}
+    strategy:
+      matrix:
+        os: [ macos-latest, windows-latest, ubuntu-latest ]
     steps:
       - name: Checkout source code
         uses: actions/checkout@master
 
-      - name: test
-        run: |
-          chmod +x ./gradlew
-          ./gradlew clean jacocoTestCoverageVerification --stacktrace
+      - name : 'GitHub Action for GraalVM'
+        uses: graalvm/setup-graalvm@v1
+        with:
+          java-version: '21'
+          distribution: 'graalvm'
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+          native-image-job-reports: 'true'
+          cache: 'gradle'
+
+      - name: Setup Gradle 8.7+
+        id: setup-gradle
+        uses: gradle/actions/setup-gradle@v3
+        with:
+          gradle-version: 8.7
+
+      - name: Gradle nativeTest
+        run: gradle nativeTest --stacktrace --no-daemon --scan --parallel
+
+      - name: Generate JaCoCo Badge
+        id: jacoco
+        uses: cicirello/jacoco-badge-generator@v2.11.0
+        with:
+          generate-branches-badge: true
+          jacoco-csv-file: build/reports/jacoco/test/jacocoTestReport.csv
+          generate-coverage-badge: true
+          coverage-badge-filename: jacoco.svg
+          branches-badge-filename: branches.svg
+          generate-coverage-endpoint: false
+          coverage-endpoint-filename: jacoco.json
+          generate-branches-endpoint: false
+          branches-endpoint-filename: branches.json
+          generate-summary: false
+          summary-filename: coverage-summary.json
+          coverage-label: '테스트 Coverage'
+          branches-label: 'branch 커버리지'
+          colors: '#4c1 #97ca00 #a4a61d #dfb317 #fe7d37 #e05d44'
+          intervals: 100 90 80 70 60 0
+          on-missing-report: fail
+          fail-if-coverage-less-than: 70
+          fail-if-branches-less-than: 80
+          fail-on-coverage-decrease: false
+          fail-on-branches-decrease: false
+          generate-workflow-summary: true
+          workflow-summary-heading: JaCoCo Test Coverage Summary
 
       - name: Log coverage percentage
         run: |
           echo "coverage = ${{ steps.jacoco.outputs.coverage }}"
           echo "branch coverage = ${{ steps.jacoco.outputs.branches }}"
+      
 
-      - name: Add coverage to PR
-        id: jacoco
-        uses: madrapps/jacoco-report@v1.6.1
-        with:
-          paths: |
-            ${{ github.workspace }}/**/build/reports/jacoco/prodNormalDebugCoverage/prodNormalDebugCoverage.xml,
-            ${{ github.workspace }}/**/build/reports/jacoco/**/debugCoverage.xml
-          token: ${{ secrets.GITHUB_TOKEN }}
-          min-coverage-overall: 70
-          min-coverage-changed-files: 90
+      #       현재 branch 전제 경로: ${{ github.ref }} -> 모양은 `refs/heads/branch-name`
+      #       branch name: ${{ github.ref_name }}
 
-      - name: Generate JaCoCo Badge
-        uses: cicirello/jacoco-badge-generator@v2.11.0
+      - name: Commit and push the badge (if it changed)
+        uses: EndBug/add-and-commit@v9
         with:
-          generate-branches-badge: true
-          jacoco-csv-file: build/reports/jacoco/test/jacocoTestReport.csv
+          default_author: github_actions
+          message: '[Action] commit badge'
+          add: '*.svg'
+
+      - name: Upload JaCoCo coverage report
+        uses: actions/upload-artifact@v4
+        with:
+          name: jacoco-report
+          path: build/reports/jacoco/test/html
 
       - name: Notification
         uses: 8398a7/action-slack@v3
@@ -47,4 +92,4 @@ jobs:
         #          if_mention: failure, cancelled
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-          SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK_URL }}
+          SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK_URL }}CK_WEBHOOK_URL }}
