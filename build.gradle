@@ -103,10 +103,10 @@ hibernate {
 graalvmNative {
     binaries {
         main {
-            verbose=true
+            buildArgs.addAll('--verbose', '-O0')
         }
         test {
-            verbose=true
+            buildArgs.addAll('--verbose', '-O0')
         }
         configureEach {
             buildArgs.add("-H:-CheckToolchain")
@@ -115,11 +115,11 @@ graalvmNative {
 }
 
 test {
-    finalizedBy jacocoTestReport
+//    finalizedBy jacocoTestReport
 }
 
-nativeCompile {
-
+nativeTest {
+//    finalizedBy jacocoTestReport
 }
 
 
