@@ -5,7 +5,7 @@ permissions:
   contents: write
 
 jobs:
-  gradlew_test:
+  onPushTest:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout source code
@@ -16,7 +16,7 @@ jobs:
         with:
           distribution: 'zulu' # See 'Supported distributions' for available options
           java-version: '21'
-#          cache: 'gradle' # 밑의 액션의 default가 caching
+          cache: 'gradle'
 #          cache-dependency-path: | # optional
 #            sub-project/*.gradle*
 #            sub-project/**/gradle-wrapper.properties
