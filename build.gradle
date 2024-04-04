@@ -121,6 +121,9 @@ test {
 nativeTest {
     finalizedBy jacocoTestReport
 }
+nativeCompile {
+    dependsOn nativeTest
+}
 
 
 jacocoTestReport {
