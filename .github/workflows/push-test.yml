@@ -46,8 +46,8 @@ jobs:
           branches-endpoint-filename: branches.json
           generate-summary: false
           summary-filename: coverage-summary.json
-          coverage-label: coverage
-          branches-label: branches
+          coverage-label: '전체 커버리지'
+          branches-label: 'branch 커버리지'
           colors: '#4c1 #97ca00 #a4a61d #dfb317 #fe7d37 #e05d44'
           intervals: 100 90 80 70 60 0
           on-missing-report: fail
