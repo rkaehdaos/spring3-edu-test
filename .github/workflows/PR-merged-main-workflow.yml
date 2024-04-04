@@ -5,6 +5,15 @@ on:
     branches: [main]
     types: [closed]
 
+# TODO
+# Profile-Guided Optimizations (PGO) 적용 필요
+#  추가 고려사항 예시
+#  부하 테스트 스크립트 실행 방법
+#
+#  프로파일 데이터의 정확한 위치 및 사용 방법
+#
+#  프로젝트에 맞는 네이티브 이미지 빌드 옵션 조정
+
 jobs:
   build:
     name: Native Build on ${{ matrix.os }}
