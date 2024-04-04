@@ -1,4 +1,4 @@
-name: After PR Merge
+name: After PR Merge Build
 
 on:
   pull_request:
@@ -74,6 +74,9 @@ jobs:
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK_URL }}
+
+# TODO
+#          make release if merged
 #
 #  release:
 #    needs: build
