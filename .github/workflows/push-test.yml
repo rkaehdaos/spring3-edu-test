@@ -75,12 +75,10 @@ jobs:
           add: '*.svg'
 
       - name: Upload JaCoCo coverage report
-#        uses: actions/upload-artifact@v2
-        run: |
-          find . -name jacoco-report*
-#        with:
-#          name: jacoco-report
-#          path: target/site/jacoco/ # maven?
+        uses: actions/upload-artifact@v4
+        with:
+          name: jacoco-report
+          path: build/reports/jacoco/test/html
 
       - name: Notification
         uses: 8398a7/action-slack@v3
