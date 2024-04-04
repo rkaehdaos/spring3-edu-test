@@ -1,4 +1,4 @@
-name: Native Build
+name: Native Test
 on:
   push:
     branches: [ main ]
