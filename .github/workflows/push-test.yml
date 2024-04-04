@@ -75,7 +75,7 @@ jobs:
           add: '*.svg'
 
       - name: Upload JaCoCo coverage report
-        uses: actions/upload-artifact@v2
+#        uses: actions/upload-artifact@v2
         run: |
           find . -name jacoco-report*
 #        with:
