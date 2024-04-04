@@ -1,5 +1,9 @@
-name: Native Test On GitHub Action With GraalVM
-on: pull_request
+name: Build
+on:
+  push:
+    branches: [ main ]
+  pull_request:
+    branches: [ main ]
 
 permissions:
   contents: write
