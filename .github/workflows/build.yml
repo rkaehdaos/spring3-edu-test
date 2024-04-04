@@ -35,7 +35,7 @@ jobs:
           gradle-version: 8.7
 
       - name: Gradle nativeTest
-        run: gradle nativeTest --stacktrace --no-daemon --scan --parallel
+        run: gradle nativeTest jacocoTestCoverageVerification --stacktrace --no-daemon --parallel
 
       - name: Generate JaCoCo Badge
         id: jacoco
@@ -96,4 +96,4 @@ jobs:
         #          if_mention: failure, cancelled
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-          SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK_URL }}CK_WEBHOOK_URL }}
+          SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK_URL }}
