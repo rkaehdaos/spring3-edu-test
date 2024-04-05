@@ -1,7 +1,8 @@
 name: 'main PR시엔 nativeTest를 합니다.'
 on:
   pull_request:
-    branches: [ main ]
+#    branches: [ main ]
+    branches-ignore: [ 'main' ]
 
 jobs:
   PR_NativeTest:
