@@ -35,6 +35,7 @@ jobs:
 
       - name: Generate JaCoCo Badge
         id: jacoco
+        if: matrix.os == 'ubuntu-latest'
         uses: cicirello/jacoco-badge-generator@v2.11.0
         with:
           jacoco-csv-file: build/reports/jacoco/test/jacocoTestReport.csv
@@ -61,11 +62,13 @@ jobs:
           workflow-summary-heading: '테스트 커버리지 요약'
 
       - name: Log coverage percentage
+        if: matrix.os == 'ubuntu-latest'
         run: |
           echo "coverage = ${{ steps.jacoco.outputs.coverage }}"
           echo "branch coverage = ${{ steps.jacoco.outputs.branches }}"
 
       - name: Upload JaCoCo coverage report
+        if: matrix.os == 'ubuntu-latest'
         uses: actions/upload-artifact@v4
         with:
           name: jacoco-report
@@ -74,7 +77,7 @@ jobs:
       - name: Notification
         uses: 8398a7/action-slack@v3
         with:
-          status: ${{ job.status }}
+          status: '${{ matrix.os }}-${{ job.status }}'
           author_name: GeunChang Ahn
           job_name: PR_NativeTest
           fields: repo,message,commit,author,action,eventName,ref,workflow,job,took,pullRequest # selectable (default: repo,message)
