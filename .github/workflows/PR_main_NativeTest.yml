@@ -1,8 +1,8 @@
 name: 'main PR시엔 nativeTest를 합니다.'
 on:
   pull_request:
-#    branches: [ main ]
-    branches-ignore: [ 'main' ]
+    branches: [ main ]
+#    branches-ignore: [ 'main' ]
 
 jobs:
   PR_NativeTest:
@@ -23,53 +23,39 @@ jobs:
           github-token: ${{ secrets.GITHUB_TOKEN }}
           native-image-job-reports: 'true'
           cache: 'gradle'
-      #
-      #      - name: Setup Gradle 8.7+
-      #        id: setup-gradle
-      #        uses: gradle/actions/setup-gradle@v3
-      #        with:
-      #          gradle-version: 8.7
 
       - name: Gradle nativeTest
         run: |
-          gradle nativeTest jacocoTestCoverageVerification --stacktrace --no-daemon --parallel --scan
+          echo "Available processors: $(nproc)"
+          gradle nativeTest jacocoTestCoverageVerification --no-daemon --parallel --scan
 
-      - name: Generate JaCoCo Badge
-        id: jacoco
-        if: matrix.os == 'ubuntu-latest'
-        uses: cicirello/jacoco-badge-generator@v2.11.0
-        with:
-          jacoco-csv-file: build/reports/jacoco/test/jacocoTestReport.csv
-          generate-coverage-badge: false
-          coverage-badge-filename: jacoco.svg
-          generate-branches-badge: false
-          branches-badge-filename: branches.svg
-          generate-coverage-endpoint: false
-          coverage-endpoint-filename: jacoco.json
-          generate-branches-endpoint: false
-          branches-endpoint-filename: branches.json
-          generate-summary: false
-          summary-filename: coverage-summary.json
-          coverage-label: '전체 커버리지'
-          branches-label: '브렌치 커버리지'
-          colors: '#4c1 #97ca00 #a4a61d #dfb317 #fe7d37 #e05d44'
-          intervals: 100 90 80 70 60 0
-          on-missing-report: fail
-          fail-if-coverage-less-than: 70
-          fail-if-branches-less-than: 80
-          fail-on-coverage-decrease: false
-          fail-on-branches-decrease: false
-          generate-workflow-summary: true
-          workflow-summary-heading: '테스트 커버리지 요약'
-
-      - name: Log coverage percentage
-        if: matrix.os == 'ubuntu-latest'
+      - name: Extract coverage info and update step summary
         run: |
-          echo "coverage = ${{ steps.jacoco.outputs.coverage }}"
-          echo "branch coverage = ${{ steps.jacoco.outputs.branches }}"
+          echo 'CSV 파일에서 커버리지 정보 추출';
+          awk -F',' 'NR > 1 {instructions_covered += $5; instructions_missed += $4; branches_covered += $7; branches_missed += $6} END {print instructions_covered, instructions_missed, branches_covered, branches_missed}' build/reports/jacoco/test/jacocoTestReport.csv > coverage.txt
+          read instructions_covered instructions_missed branches_covered branches_missed < coverage.txt               
+          echo '커버리지 계산'; 
+          total_instructions=$((instructions_covered + instructions_missed))
+          total_branches=$((branches_covered + branches_missed))
+          instruction_coverage=$(echo "scale=2; $instructions_covered / $total_instructions * 100" | bc)
+          echo '분모가 0일 경우, 커버리지를 'N/A'로 설정';
+          if [ "$total_instructions" -eq 0 ]; then
+            instruction_coverage="N/A"
+          else
+            instruction_coverage=$(echo "scale=2; $instructions_covered / $total_instructions * 100" | bc)%
+          fi
+          if [ "$total_branches" -eq 0 ]; then
+            branch_coverage="N/A"
+          else
+            branch_coverage=$(echo "scale=2; $branches_covered / $total_branches * 100" | bc)%
+          fi
+          echo 'GITHUB_STEP_SUMMARY에 커버리지 정보 추가';
+          echo "JaCoCo 커버리지 요약" >> $GITHUB_STEP_SUMMARY
+          echo "Instruction Coverage: $instruction_coverage" >> $GITHUB_STEP_SUMMARY
+          echo "Branch Coverage: $branch_coverage" >> $GITHUB_STEP_SUMMARY
 
       - name: Upload JaCoCo coverage report
-        if: matrix.os == 'ubuntu-latest'
+        if: (matrix.os == 'ubuntu-latest') && (failure())
         uses: actions/upload-artifact@v4
         with:
           name: jacoco-report
@@ -83,8 +69,8 @@ jobs:
           author_name: GeunChang Ahn
           job_name: PR_NativeTest
           fields: repo,message,commit,author,action,eventName,ref,workflow,job,took,pullRequest # selectable (default: repo,message)
-          #          mention: here
-          if_mention: success, failure, cancelled
+          mention: '@rkaehdaos'
+          if_mention: 'success,failure,cancelled'
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK_URL }}
