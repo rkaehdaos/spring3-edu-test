@@ -92,7 +92,7 @@ jobs:
           job_name: onPushTest
           fields: repo,message,commit,author,action,eventName,ref,workflow,job,took,pullRequest # selectable (default: repo,message)
           #          mention: here
-          if_mention: success, failure, cancelled
+          if_mention: 'success,failure,cancelled'
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK_URL }}
