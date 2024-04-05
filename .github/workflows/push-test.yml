@@ -1,8 +1,7 @@
 name: Gradle test On GitHub Action
 on:
   push:
-    branches-ignore:
-      - 'main'
+    branches-ignore: ['main']
 
 permissions:
   contents: write
@@ -21,9 +20,9 @@ jobs:
           distribution: 'zulu' # See 'Supported distributions' for available options
           java-version: '21'
           cache: 'gradle'
-#          cache-dependency-path: | # optional
-#            sub-project/*.gradle*
-#            sub-project/**/gradle-wrapper.properties
+      #          cache-dependency-path: | # optional
+      #            sub-project/*.gradle*
+      #            sub-project/**/gradle-wrapper.properties
 
       - name: Setup Gradle 8.7+
         id: setup-gradle
@@ -32,17 +31,18 @@ jobs:
           gradle-version: 8.7
 
       - name: test
-        run: gradle clean test jacocoTestCoverageVerification --stacktrace --no-daemon --parallel
-      #          ./gradlew clean test jacocoTestCoverageVerification --stacktrace --no-daemon
+        run: |
+          gradle test jacocoTestCoverageVerification --stacktrace --no-daemon --parallel
+
 
       - name: Generate JaCoCo Badge
         id: jacoco
         uses: cicirello/jacoco-badge-generator@v2.11.0
         with:
-          generate-branches-badge: true
           jacoco-csv-file: build/reports/jacoco/test/jacocoTestReport.csv
           generate-coverage-badge: true
           coverage-badge-filename: jacoco.svg
+          generate-branches-badge: true
           branches-badge-filename: branches.svg
           generate-coverage-endpoint: false
           coverage-endpoint-filename: jacoco.json
@@ -66,10 +66,10 @@ jobs:
         run: |
           echo "coverage = ${{ steps.jacoco.outputs.coverage }}"
           echo "branch coverage = ${{ steps.jacoco.outputs.branches }}"
+      
 
-
-#       현재 branch 전제 경로: ${{ github.ref }} -> 모양은 `refs/heads/branch-name`
-#       branch name: ${{ github.ref_name }}
+      #       현재 branch 전제 경로: ${{ github.ref }} -> 모양은 `refs/heads/branch-name`
+      #       branch name: ${{ github.ref_name }}
 
       - name: Commit and push the badge (if it changed)
         uses: EndBug/add-and-commit@v9
