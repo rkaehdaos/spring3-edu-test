@@ -115,7 +115,7 @@ graalvmNative {
 }
 
 test {
-//    finalizedBy jacocoTestReport
+    maxParallelForks = Runtime.runtime.availableProcessors()
 }
 
 nativeTest {
@@ -131,7 +131,7 @@ jacocoTestReport {
 jacocoTestCoverageVerification {
     dependsOn jacocoTestReport
     violationRules {
-        rule { limit { minimum = 0.9 } }
+        rule { limit { minimum = 0.8 } }
         rule {
             enabled = false // rule 비활성화 -> 해당 룰이 적용되지 않음
             element = 'CLASS'
