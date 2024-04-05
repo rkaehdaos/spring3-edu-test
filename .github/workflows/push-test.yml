@@ -59,7 +59,7 @@ jobs:
           intervals: 100 90 80 70 60 0
           on-missing-report: fail
           fail-if-coverage-less-than: 70
-          fail-if-branches-less-than: 80
+          fail-if-branches-less-than: 90
           fail-on-coverage-decrease: false
           fail-on-branches-decrease: false
           generate-workflow-summary: true
