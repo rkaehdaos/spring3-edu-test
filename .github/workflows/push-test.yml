@@ -21,7 +21,7 @@ jobs:
       - name: test
         run: |
           echo "Available processors: $(nproc)"
-          gradle test jacocoTestCoverageVerification --parallel
+          gradle test jacocoTestCoverageVerification --no-daemon --parallel
 
       - name: Upload JaCoCo coverage report
         uses: actions/upload-artifact@v4
