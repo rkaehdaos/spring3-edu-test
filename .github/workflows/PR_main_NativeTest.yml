@@ -1,7 +1,5 @@
-name: Native Test
+name: 'main PR시엔 nativeTest를 합니다.'
 on:
-  push:
-    branches: [ main ]
   pull_request:
     branches: [ main ]
 
@@ -41,10 +39,10 @@ jobs:
         id: jacoco
         uses: cicirello/jacoco-badge-generator@v2.11.0
         with:
-          generate-branches-badge: true
           jacoco-csv-file: build/reports/jacoco/test/jacocoTestReport.csv
-          generate-coverage-badge: true
+          generate-coverage-badge: false
           coverage-badge-filename: jacoco.svg
+          generate-branches-badge: false
           branches-badge-filename: branches.svg
           generate-coverage-endpoint: false
           coverage-endpoint-filename: jacoco.json
@@ -52,8 +50,8 @@ jobs:
           branches-endpoint-filename: branches.json
           generate-summary: false
           summary-filename: coverage-summary.json
-          coverage-label: '테스트 Coverage'
-          branches-label: 'branch 커버리지'
+          coverage-label: '전체 커버리지'
+          branches-label: '브렌치 커버리지'
           colors: '#4c1 #97ca00 #a4a61d #dfb317 #fe7d37 #e05d44'
           intervals: 100 90 80 70 60 0
           on-missing-report: fail
@@ -62,7 +60,7 @@ jobs:
           fail-on-coverage-decrease: false
           fail-on-branches-decrease: false
           generate-workflow-summary: true
-          workflow-summary-heading: JaCoCo Test Coverage Summary
+          workflow-summary-heading: '테스트 커버리지 Summary'
 
       - name: Log coverage percentage
         run: |
