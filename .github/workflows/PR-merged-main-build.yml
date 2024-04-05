@@ -68,6 +68,7 @@ jobs:
         with:
           status: ${{ job.status }}
           author_name: GeunChang Ahn
+          job_name: build
           fields: repo,message,commit,author,action,eventName,ref,workflow,job,took,pullRequest # selectable (default: repo,message)
         #          mention: here
         #          if_mention: failure, cancelled
