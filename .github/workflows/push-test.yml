@@ -63,8 +63,8 @@ jobs:
           author_name: GeunChang Ahn
           job_name: onPushTest
           fields: repo,message,commit,author,eventName,ref,workflow,job,took,
-          mention: '@rkaehdaos'
-          if_mention: 'success,failure,cancelled'
+        #          mention: '@rkaehdaos'
+        #          if_mention: 'success,failure,cancelled'
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK_URL }}
