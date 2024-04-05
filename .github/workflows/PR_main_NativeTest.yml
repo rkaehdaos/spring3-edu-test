@@ -2,7 +2,6 @@ name: 'main PR시엔 nativeTest를 합니다.'
 on:
   pull_request:
     branches: [ main ]
-#    branches-ignore: [ 'main' ]
 
 jobs:
   PR_NativeTest:
@@ -30,6 +29,7 @@ jobs:
           gradle nativeTest jacocoTestCoverageVerification --no-daemon --parallel --scan
 
       - name: Extract coverage info and update step summary
+        shell: bash # for Windows env
         run: |
           echo 'CSV 파일에서 커버리지 정보 추출';
           awk -F',' 'NR > 1 {instructions_covered += $5; instructions_missed += $4; branches_covered += $7; branches_missed += $6} END {print instructions_covered, instructions_missed, branches_covered, branches_missed}' build/reports/jacoco/test/jacocoTestReport.csv > coverage.txt
