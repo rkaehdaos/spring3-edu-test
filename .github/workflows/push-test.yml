@@ -25,21 +25,18 @@ jobs:
 
       - name: Extract coverage info and update step summary
         run: |
-#           CSV 파일에서 커버리지 정보 추출
+          echo 'CSV 파일에서 커버리지 정보 추출';
           awk -F',' 'NR > 1 {instructions_covered += $5; instructions_missed += $4; branches_covered += $7; branches_missed += $6} END {print instructions_covered, instructions_missed, branches_covered, branches_missed}' build/reports/jacoco/test/jacocoTestReport.csv > coverage.txt
-          read instructions_covered instructions_missed branches_covered branches_missed < coverage.txt
-          
-#           커버리지 계산
+          read instructions_covered instructions_missed branches_covered branches_missed < coverage.txt               
+          echo '커버리지 계산'; 
           total_instructions=$((instructions_covered + instructions_missed))
           total_branches=$((branches_covered + branches_missed))
           instruction_coverage=$(echo "scale=2; $instructions_covered / $total_instructions * 100" | bc)
           branch_coverage=$(echo "scale=2; $branches_covered / $total_branches * 100" | bc)
-          
-#           GITHUB_STEP_SUMMARY에 커버리지 정보 추가
+          echo 'GITHUB_STEP_SUMMARY에 커버리지 정보 추가';
           echo "JaCoCo Coverage Report Summary" >> $GITHUB_STEP_SUMMARY
           echo "Instruction Coverage: $instruction_coverage%" >> $GITHUB_STEP_SUMMARY
           echo "Branch Coverage: $branch_coverage%" >> $GITHUB_STEP_SUMMARY
-
 
       - name: Upload JaCoCo coverage report
         uses: actions/upload-artifact@v4
