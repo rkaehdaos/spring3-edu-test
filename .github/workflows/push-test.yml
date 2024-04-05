@@ -32,7 +32,7 @@ jobs:
 
       - name: test
         run: |
-          gradle test jacocoTestCoverageVerification --stacktrace --no-daemon --parallel
+          gradle test jacocoTestCoverageVerification --no-daemon --parallel
 
 
       - name: Generate JaCoCo Badge
@@ -91,7 +91,7 @@ jobs:
           status: ${{ job.status }}
           author_name: GeunChang Ahn
           job_name: onPushTest
-          fields: repo,message,commit,author,action,eventName,ref,workflow,job,took,
+          fields: repo,message,commit,author,eventName,ref,workflow,job,took,
           mention: '@rkaehdaos'
           if_mention: 'success,failure,cancelled'
         env:
