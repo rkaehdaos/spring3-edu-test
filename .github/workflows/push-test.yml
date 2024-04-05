@@ -8,7 +8,7 @@ permissions:
 
 jobs:
   onPushTest:
-    if: github.event.pull_request.merged == false
+    if: github.event.pull_request.opened == false
     runs-on: ubuntu-latest
     steps:
       - name: Checkout source code
