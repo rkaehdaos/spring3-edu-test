@@ -14,7 +14,7 @@ jobs:
       - name: Checkout source code
         uses: actions/checkout@master
 
-      - name : 'GitHub Action for GraalVM'
+      - name: 'GitHub Action for GraalVM'
         uses: graalvm/setup-graalvm@v1
         with:
           java-version: '21'
@@ -22,12 +22,12 @@ jobs:
           github-token: ${{ secrets.GITHUB_TOKEN }}
           native-image-job-reports: 'true'
           cache: 'gradle'
-#
-#      - name: Setup Gradle 8.7+
-#        id: setup-gradle
-#        uses: gradle/actions/setup-gradle@v3
-#        with:
-#          gradle-version: 8.7
+      #
+      #      - name: Setup Gradle 8.7+
+      #        id: setup-gradle
+      #        uses: gradle/actions/setup-gradle@v3
+      #        with:
+      #          gradle-version: 8.7
 
       - name: Gradle nativeTest
         run: |
@@ -81,8 +81,8 @@ jobs:
           author_name: GeunChang Ahn
           job_name: PR_NativeTest
           fields: repo,message,commit,author,action,eventName,ref,workflow,job,took,pullRequest # selectable (default: repo,message)
-        #          mention: here
-        #          if_mention: failure, cancelled
+          #          mention: here
+          if_mention: success, failure, cancelled
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK_URL }}

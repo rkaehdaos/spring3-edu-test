@@ -2,8 +2,8 @@ name: After PR Merge Build
 
 on:
   pull_request:
-    branches: [main]
-    types: [closed]
+    branches: [ main ]
+    types: [ closed ]
 
 # TODO
 # Profile-Guided Optimizations (PGO) 적용 필요
@@ -26,8 +26,8 @@ jobs:
       - name: Checkout source code
         uses: actions/checkout@master
 
-#       https://github.com/marketplace/actions/github-action-for-graalvm
-      - name : 'GitHub Action for GraalVM'
+      #       https://github.com/marketplace/actions/github-action-for-graalvm
+      - name: 'GitHub Action for GraalVM'
         uses: graalvm/setup-graalvm@v1
         with:
           java-version: '21'
@@ -47,15 +47,15 @@ jobs:
 
       - name: Example step
         run: |
-            echo "GRAALVM_HOME: $GRAALVM_HOME"
-            echo "JAVA_HOME: $JAVA_HOME"
-            javac --version
-            java --version
-            native-image --version
-            ./gradlew -v
+          echo "GRAALVM_HOME: $GRAALVM_HOME"
+          echo "JAVA_HOME: $JAVA_HOME"
+          javac --version
+          java --version
+          native-image --version
+          ./gradlew -v
 
       - name: Build step using Gradle plugin
-        run:  ./gradlew clean nativeCompile
+        run: ./gradlew clean nativeCompile
 
       - name: Upload binary
         uses: actions/upload-artifact@v2
@@ -70,8 +70,8 @@ jobs:
           author_name: GeunChang Ahn
           job_name: build
           fields: repo,message,commit,author,action,eventName,ref,workflow,job,took,pullRequest # selectable (default: repo,message)
-        #          mention: here
-        #          if_mention: failure, cancelled
+          #          mention: here
+          if_mention: success, failure, cancelled
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK_URL }}
