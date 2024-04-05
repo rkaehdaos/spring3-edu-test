@@ -50,8 +50,8 @@ jobs:
           branches-endpoint-filename: branches.json
           generate-summary: false
           summary-filename: coverage-summary.json
-          coverage-label: '테스트 Coverage'
-          branches-label: 'branch 커버리지'
+          coverage-label: '전체 커버리지'
+          branches-label: '브렌치 커버리지'
           colors: '#4c1 #97ca00 #a4a61d #dfb317 #fe7d37 #e05d44'
           intervals: 100 90 80 70 60 0
           on-missing-report: fail
@@ -60,7 +60,7 @@ jobs:
           fail-on-coverage-decrease: false
           fail-on-branches-decrease: false
           generate-workflow-summary: true
-          workflow-summary-heading: JaCoCo Test Coverage Summary
+          workflow-summary-heading: '테스트 커버리지 요약'
 
       - name: Log coverage percentage
         run: |

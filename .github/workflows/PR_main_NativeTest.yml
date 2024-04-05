@@ -58,7 +58,7 @@ jobs:
           fail-on-coverage-decrease: false
           fail-on-branches-decrease: false
           generate-workflow-summary: true
-          workflow-summary-heading: '테스트 커버리지 Summary'
+          workflow-summary-heading: '테스트 커버리지 요약'
 
       - name: Log coverage percentage
         run: |
