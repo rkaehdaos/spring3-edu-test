@@ -77,6 +77,7 @@ jobs:
 
       - name: Notification
         uses: 8398a7/action-slack@v3
+        if: always()
         with:
           status: '${{ matrix.os }}-${{ job.status }}'
           author_name: GeunChang Ahn
