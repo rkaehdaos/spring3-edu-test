@@ -32,7 +32,17 @@ jobs:
           total_instructions=$((instructions_covered + instructions_missed))
           total_branches=$((branches_covered + branches_missed))
           instruction_coverage=$(echo "scale=2; $instructions_covered / $total_instructions * 100" | bc)
-          branch_coverage=$(echo "scale=2; $branches_covered / $total_branches * 100" | bc)
+          echo '분모가 0일 경우, 커버리지를 'N/A'로 설정';
+          if [ "$total_instructions" -eq 0 ]; then
+            instruction_coverage="N/A"
+          else
+            instruction_coverage=$(echo "scale=2; $instructions_covered / $total_instructions * 100" | bc)
+          fi
+          if [ "$total_branches" -eq 0 ]; then
+            branch_coverage="N/A"
+          else
+            branch_coverage=$(echo "scale=2; $branches_covered / $total_branches * 100" | bc)
+          fi
           echo 'GITHUB_STEP_SUMMARY에 커버리지 정보 추가';
           echo "JaCoCo Coverage Report Summary" >> $GITHUB_STEP_SUMMARY
           echo "Instruction Coverage: $instruction_coverage%" >> $GITHUB_STEP_SUMMARY
