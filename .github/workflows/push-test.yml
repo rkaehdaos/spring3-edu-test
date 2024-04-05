@@ -30,8 +30,6 @@ jobs:
       #        with:
       #          gradle-version: 8.7
 
-      - name: 'Gradle 스크립트를 통한 사용가능 프로세스 출력'
-        run: gradle printAvailableProcessors
       - name: 'shell command를 통한 사용가능 프로세스 출력'
         run: nproc
 

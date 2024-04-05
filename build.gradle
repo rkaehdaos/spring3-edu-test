@@ -146,8 +146,3 @@ jacocoTestCoverageVerification {
         }
     }
 }
-task printAvailableProcessors {
-    doLast {
-        println "Available processors: " + Runtime.runtime.availableProcessors()
-    }
-}
