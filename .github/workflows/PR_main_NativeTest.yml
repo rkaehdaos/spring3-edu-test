@@ -31,7 +31,7 @@ jobs:
 
       - name: Gradle nativeTest
         run: |
-          gradle nativeTest jacocoTestCoverageVerification --stacktrace --no-daemon --parallel
+          gradle nativeTest jacocoTestCoverageVerification --stacktrace --no-daemon --parallel --scan
 
       - name: Generate JaCoCo Badge
         id: jacoco
