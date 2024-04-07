@@ -58,7 +58,8 @@ jobs:
         if: matrix.os == 'windows-latest'
         shell: pwsh
         run: |
-          echo 'CSV 파일에서 커버리지 정보 추출'    
+          Write-Host 'CSV 파일에서 커버리지 정보 추출'
+      
           $content = Get-Content "build/reports/jacoco/test/jacocoTestReport.csv" -Raw
           $lines = $content -split "\r?\n"
           $instructions_covered = 0
@@ -78,9 +79,9 @@ jobs:
       
           $total_instructions = $instructions_covered + $instructions_missed
           $total_branches = $branches_covered + $branches_missed
-          
-          echo '커버리지 계산'
-          echo '분모가 0일 경우, 커버리지를 'N/A'로 설정'
+      
+          Write-Host '커버리지 계산'
+          Write-Host '분모가 0일 경우, 커버리지를 'N/A'로 설정'
           if ($total_instructions -eq 0) {
             $instruction_coverage = "N/A"
           } else {
@@ -91,14 +92,12 @@ jobs:
           } else {
             $branch_coverage = [math]::Round(($branches_covered / $total_branches * 100), 2)
           }
-          
-          echo 'GITHUB_STEP_SUMMARY에 커버리지 정보 추가'
-          $summary = @"
-            JaCoCo 커버리지 요약
-            Instruction Coverage: $instruction_coverage
-            Branch Coverage: $branch_coverage
-            "@
-          $summary | Out-File -FilePath $env:GITHUB_STEP_SUMMARY -Append
+      
+          Write-Host 'GITHUB_STEP_SUMMARY에 커버리지 정보 추가'
+          $summary = "JaCoCo 커버리지 요약`n"
+          $summary += "Instruction Coverage: $instruction_coverage`n"
+          $summary += "Branch Coverage: $branch_coverage`n"
+          Add-Content -Path $env:GITHUB_STEP_SUMMARY -Value $summary
 
       - name: Upload JaCoCo coverage report
         if: (matrix.os == 'ubuntu-latest') && (failure())
