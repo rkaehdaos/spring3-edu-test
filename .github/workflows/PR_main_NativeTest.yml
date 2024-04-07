@@ -28,8 +28,8 @@ jobs:
           echo "Available processors: $(nproc)"
           gradle nativeTest jacocoTestCoverageVerification --no-daemon --parallel --scan
 
-      - name: Extract coverage info and update step summary
-        shell: bash # for Windows env
+      - name: Extract coverage info and update step summary(Not windows)
+        if: matrix.os != 'windows-latest'
         run: |
           echo 'CSV 파일에서 커버리지 정보 추출';
           awk -F',' 'NR > 1 {instructions_covered += $5; instructions_missed += $4; branches_covered += $7; branches_missed += $6} END {print instructions_covered, instructions_missed, branches_covered, branches_missed}' build/reports/jacoco/test/jacocoTestReport.csv > coverage.txt
@@ -53,6 +53,52 @@ jobs:
           echo "JaCoCo 커버리지 요약" >> $GITHUB_STEP_SUMMARY
           echo "Instruction Coverage: $instruction_coverage" >> $GITHUB_STEP_SUMMARY
           echo "Branch Coverage: $branch_coverage" >> $GITHUB_STEP_SUMMARY
+
+      - name: Extract coverage info and update step summary(For Windows)
+        if: matrix.os == 'windows-latest'
+        shell: pwsh
+        run: |
+          echo 'CSV 파일에서 커버리지 정보 추출'    
+          $content = Get-Content "build/reports/jacoco/test/jacocoTestReport.csv" -Raw
+          $lines = $content -split "\r?\n"
+          $instructions_covered = 0
+          $instructions_missed = 0
+          $branches_covered = 0
+          $branches_missed = 0
+      
+          foreach ($line in $lines) {
+            if ($line -match '^\d+,\d+,\d+,\d+,\d+,\d+,\d+') {
+              $fields = $line -split ","
+              $instructions_covered += [int]$fields[4]
+              $instructions_missed += [int]$fields[3]
+              $branches_covered += [int]$fields[6]
+              $branches_missed += [int]$fields[5]
+            }
+          }
+      
+          $total_instructions = $instructions_covered + $instructions_missed
+          $total_branches = $branches_covered + $branches_missed
+          
+          echo '커버리지 계산'
+          echo '분모가 0일 경우, 커버리지를 'N/A'로 설정'
+          if ($total_instructions -eq 0) {
+            $instruction_coverage = "N/A"
+          } else {
+            $instruction_coverage = [math]::Round(($instructions_covered / $total_instructions * 100), 2)
+          }
+          if ($total_branches -eq 0) {
+            $branch_coverage = "N/A"
+          } else {
+            $branch_coverage = [math]::Round(($branches_covered / $total_branches * 100), 2)
+          }
+          
+          echo 'GITHUB_STEP_SUMMARY에 커버리지 정보 추가'
+          $summary = @"
+            JaCoCo 커버리지 요약
+            Instruction Coverage: $instruction_coverage
+            Branch Coverage: $branch_coverage
+            "@
+          $summary | Out-File -FilePath $env:GITHUB_STEP_SUMMARY -Append
 
       - name: Upload JaCoCo coverage report
         if: (matrix.os == 'ubuntu-latest') && (failure())
