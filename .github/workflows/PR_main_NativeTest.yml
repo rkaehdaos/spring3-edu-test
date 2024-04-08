@@ -28,8 +28,7 @@ jobs:
         run: |
           echo 'Available processors: $(nproc)'
 #          gradle nativeTest jacocoTestCoverageVerification --no-daemon --parallel --scan
-          echo '임시 test'
-          gradle test jacocoTestCoverageVerification --no-daemon --parallel
+          gradle clean test jacocoTestCoverageVerification --no-daemon --parallel
 
       - name: Extract coverage info and update step summary(For Windows)
         if: matrix.os == 'windows-latest'
