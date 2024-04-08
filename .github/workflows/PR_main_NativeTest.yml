@@ -1,16 +1,15 @@
-name: 'main PR시 테스트 임시'
+name: 'main PR시엔 nativeTest를 합니다.'
 on:
   pull_request:
     branches: [ main ]
 
 jobs:
   PR_NativeTest:
-    name: NativeTest on ${{ matrix.os }}
+    name: Native Test on ${{ matrix.os }}
     runs-on: ${{ matrix.os }}
     strategy:
       matrix:
-#        os: [ macos-latest, windows-latest, ubuntu-latest ]
-        os: [windows-latest ]
+        os: [ macos-latest, windows-latest, ubuntu-latest ]
     steps:
       - name: Checkout source code
         uses: actions/checkout@master
@@ -26,23 +25,48 @@ jobs:
 
       - name: Gradle nativeTest
         run: |
-          echo 'Available processors: $(nproc)'
-#          gradle nativeTest jacocoTestCoverageVerification --no-daemon --parallel --scan
-          gradle clean test jacocoTestCoverageVerification --no-daemon --parallel
+          echo "Available processors: $(nproc)"
+          gradle nativeTest jacocoTestCoverageVerification --no-daemon --parallel --scan
+
+      - name: Extract coverage info and update step summary(Not windows)
+        if: matrix.os != 'windows-latest'
+        run: |
+          echo 'CSV 파일에서 커버리지 정보 추출';
+          awk -F',' 'NR > 1 {instructions_covered += $5; instructions_missed += $4; branches_covered += $7; branches_missed += $6} END {print instructions_covered, instructions_missed, branches_covered, branches_missed}' build/reports/jacoco/test/jacocoTestReport.csv > coverage.txt
+          read instructions_covered instructions_missed branches_covered branches_missed < coverage.txt               
+          echo '커버리지 계산'; 
+          total_instructions=$((instructions_covered + instructions_missed))
+          total_branches=$((branches_covered + branches_missed))
+          instruction_coverage=$(echo "scale=2; $instructions_covered / $total_instructions * 100" | bc)
+          echo '분모가 0일 경우, 커버리지를 'N/A'로 설정';
+          if [ "$total_instructions" -eq 0 ]; then
+            instruction_coverage="N/A"
+          else
+            instruction_coverage=$(echo "scale=2; $instructions_covered / $total_instructions * 100" | bc)%
+          fi
+          if [ "$total_branches" -eq 0 ]; then
+            branch_coverage="N/A"
+          else
+            branch_coverage=$(echo "scale=2; $branches_covered / $total_branches * 100" | bc)%
+          fi
+          echo 'GITHUB_STEP_SUMMARY에 커버리지 정보 추가';
+          echo "JaCoCo 커버리지 요약" >> $GITHUB_STEP_SUMMARY
+          echo "Instruction Coverage: $instruction_coverage" >> $GITHUB_STEP_SUMMARY
+          echo "Branch Coverage: $branch_coverage" >> $GITHUB_STEP_SUMMARY
 
       - name: Extract coverage info and update step summary(For Windows)
         if: matrix.os == 'windows-latest'
         shell: pwsh
         run: |
           Write-Host 'CSV 파일에서 커버리지 정보 추출'
-      
+          
           $content = Get-Content "build/reports/jacoco/test/jacocoTestReport.csv" -Raw
           $lines = $content -split "\r?\n"
           $instructions_covered = 0
           $instructions_missed = 0
           $branches_covered = 0
           $branches_missed = 0
-      
+          
           foreach ($line in $lines) {
             if ($line -match '^\d+,\d+,\d+,\d+,\d+,\d+,\d+') {
               $fields = $line -split ","
@@ -52,15 +76,10 @@ jobs:
               $branches_missed += [int]$fields[5]
             }
           }
-          echo 'for 문 이후 변수 CHECK'
-          echo 'instructions_covered: $instructions_covered'
-          echo 'instructions_missed: $instructions_missed'
-          echo 'branches_covered: $branches_covered'
-          echo 'branches_missed: $branches_missed'
           
           $total_instructions = $instructions_covered + $instructions_missed
           $total_branches = $branches_covered + $branches_missed
-      
+          
           Write-Host '커버리지 계산'
           Write-Host '분모가 0일 경우, 커버리지를 'N/A'로 설정'
           if ($total_instructions -eq 0) {
@@ -73,7 +92,7 @@ jobs:
           } else {
             $branch_coverage = [math]::Round(($branches_covered / $total_branches * 100), 2)
           }
-      
+          
           Write-Host 'GITHUB_STEP_SUMMARY에 커버리지 정보 추가'
           $summary = "JaCoCo 커버리지 요약`n"
           $summary += "Instruction Coverage: $instruction_coverage`n"
