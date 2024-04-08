@@ -1,3 +1,15 @@
 # workflow test for newbee
 
-[![Build with GitHub Action for GraalVM](https://github.com/rkaehdaos/spring3-edu-test/actions/workflows/Build-main.yml/badge.svg?branch=main)](https://github.com/rkaehdaos/spring3-edu-test/actions/workflows/Build-main.yml)
+# badge test
+
+## Coverage
+[![Coverage](.github/badges/jacoco.svg)](https://github.com/rkaehdaos/spring3-edu-test/actions/workflows/PR-workflow.yml)
+
+## branch coverage badge
+![Branches](.github/badges/branches.svg)
+
+
+
+| type | badge|
+| :--- | :--- |
+| __Build Status__ |[![Coverage](.github/badges/jacoco.svg)](https://github.com/rkaehdaos/spring3-edu-test/actions/workflows/PR-workflow.yml)|

@@ -1,0 +1,103 @@
+name: 'main PR시엔 nativeTest를 합니다.'
+on:
+  pull_request:
+    branches: [ main ]
+
+jobs:
+  PR_NativeTest:
+    name: Native Test on ${{ matrix.os }}
+    runs-on: ${{ matrix.os }}
+    strategy:
+      matrix:
+        os: [windows-latest]
+    steps:
+      - name: Checkout source code
+        uses: actions/checkout@master
+
+      - name: 'GitHub Action for GraalVM'
+        uses: graalvm/setup-graalvm@v1
+        with:
+          java-version: '21'
+          distribution: 'graalvm'
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+          native-image-job-reports: 'true'
+          cache: 'gradle'
+
+      - name: Gradle nativeTest
+        run: |
+          echo "Available processors: $(nproc)"
+          gradle test jacocoTestCoverageVerification --no-daemon --parallel
+
+      - name: Extract coverage info and update step summary(For Windows)
+        if: matrix.os == 'windows-latest'
+        shell: pwsh
+        run: |
+          Write-Host 'CSV 파일에서 커버리지 정보 추출'
+          
+          $content = Get-Content "build/reports/jacoco/test/jacocoTestReport.csv" -Raw
+          Write-Host '변수 확인'
+
+          $lines = $content -split "\r?\n"
+          $instructions_covered = 0
+          $instructions_missed = 0
+          $branches_covered = 0
+          $branches_missed = 0
+          
+          foreach ($line in $lines) {
+            if ($line -match '^\d+,\d+,\d+,\d+,\d+,\d+,\d+') {
+              $fields = $line -split ","
+              $instructions_covered += [int]$fields[4]
+              $instructions_missed += [int]$fields[3]
+              $branches_covered += [int]$fields[6]
+              $branches_missed += [int]$fields[5]
+            }
+          }
+          
+          $total_instructions = $instructions_covered + $instructions_missed
+          $total_branches = $branches_covered + $branches_missed
+          
+          Write-Host '변수 확인'
+          Write-Host "`$instructions_covered: $instructions_covered"
+          Write-Host "`$instructions_missed: $instructions_missed"
+          Write-Host "`$branches_covered: $branches_covered"
+          Write-Host "`$branches_missed: $branches_missed"
+          
+          Write-Host '커버리지 계산'
+          Write-Host '분모가 0일 경우, 커버리지를 'N/A'로 설정'
+          if ($total_instructions -eq 0) {
+            $instruction_coverage = "N/A"
+          } else {
+            $instruction_coverage = [math]::Round(($instructions_covered / $total_instructions * 100), 2)
+          }
+          if ($total_branches -eq 0) {
+            $branch_coverage = "N/A"
+          } else {
+            $branch_coverage = [math]::Round(($branches_covered / $total_branches * 100), 2)
+          }
+          
+          Write-Host 'GITHUB_STEP_SUMMARY에 커버리지 정보 추가'
+          $summary = "JaCoCo 커버리지 요약`n"
+          $summary += "Instruction Coverage: $instruction_coverage`n"
+          $summary += "Branch Coverage: $branch_coverage`n"
+          Add-Content -Path $env:GITHUB_STEP_SUMMARY -Value $summary
+
+      - name: Upload JaCoCo coverage report
+        if: (matrix.os == 'ubuntu-latest') && (failure())
+        uses: actions/upload-artifact@v4
+        with:
+          name: jacoco-report
+          path: build/reports/jacoco/test/html
+
+      - name: Notification
+        uses: 8398a7/action-slack@v3
+        if: always()
+        with:
+          status: ${{ job.status }}
+          author_name: GeunChang Ahn
+          job_name: PR_NativeTest
+          fields: repo,message,commit,author,eventName,ref,workflow,job,took,
+        #          mention: '@rkaehdaos'
+        #          if_mention: 'success,failure,cancelled'
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK_URL }}

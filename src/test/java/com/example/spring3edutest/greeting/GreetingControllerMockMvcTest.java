@@ -1,5 +1,6 @@
 package com.example.spring3edutest.greeting;
 
+import lombok.extern.slf4j.Slf4j;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -17,6 +18,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 @ExtendWith(SpringExtension.class)
 @WebMvcTest(controllers = {GreetingController.class})
 @DisplayName("Greeting MockTest")
+@Slf4j
 class GreetingControllerMockMvcTest {
 
     @Autowired
@@ -24,6 +26,7 @@ class GreetingControllerMockMvcTest {
 
     @Test
     void greetingTest1() throws Exception {
+        log.debug("test1");
         mockMvc.perform(get("/greeting"))
                 .andDo(print())
                 .andExpect(status().isOk())
@@ -35,6 +38,7 @@ class GreetingControllerMockMvcTest {
 
     @Test
     void greetingTest2() throws Exception {
+        log.debug("test2");
         mockMvc.perform(get("/greeting?name=test2"))
                 .andDo(print())
                 .andExpect(jsonPath("id", isA(Number.class)))
