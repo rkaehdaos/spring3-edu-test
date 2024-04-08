@@ -26,7 +26,7 @@ jobs:
       - name: Gradle nativeTest
         run: |
           echo "Available processors: $(nproc)"
-          gradle nativeTest jacocoTestCoverageVerification --no-daemon --parallel --scan
+          gradle test jacocoTestCoverageVerification --no-daemon --parallel
 
       - name: Extract coverage info and update step summary(For Windows)
         if: matrix.os == 'windows-latest'
@@ -35,6 +35,8 @@ jobs:
           Write-Host 'CSV 파일에서 커버리지 정보 추출'
           
           $content = Get-Content "build/reports/jacoco/test/jacocoTestReport.csv" -Raw
+          Write-Host '변수 확인'
+
           $lines = $content -split "\r?\n"
           $instructions_covered = 0
           $instructions_missed = 0
@@ -57,9 +59,8 @@ jobs:
           Write-Host '변수 확인'
           Write-Host "`$instructions_covered: $instructions_covered"
           Write-Host "`$instructions_missed: $instructions_missed"
-          
-          Write-Host '$instructions_covered: $instructions_covered'
-          Write-Host '$instructions_missed: $instructions_missed'
+          Write-Host "`$branches_covered: $branches_covered"
+          Write-Host "`$branches_missed: $branches_missed"
           
           Write-Host '커버리지 계산'
           Write-Host '분모가 0일 경우, 커버리지를 'N/A'로 설정'
