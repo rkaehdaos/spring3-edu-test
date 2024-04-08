@@ -54,6 +54,12 @@ jobs:
           $total_instructions = $instructions_covered + $instructions_missed
           $total_branches = $branches_covered + $branches_missed
           
+          Write-Host '변수 확인'
+          Write-Host '$instructions_covered: $instructions_covered'
+          Write-Host '$instructions_missed: $instructions_missed'
+          Write-Host '$instructions_covered: $instructions_covered'
+          Write-Host '$instructions_missed: $instructions_missed'
+          
           Write-Host '커버리지 계산'
           Write-Host '분모가 0일 경우, 커버리지를 'N/A'로 설정'
           if ($total_instructions -eq 0) {
