@@ -55,8 +55,9 @@ jobs:
           $total_branches = $branches_covered + $branches_missed
           
           Write-Host '변수 확인'
-          Write-Host '$instructions_covered: $instructions_covered'
-          Write-Host '$instructions_missed: $instructions_missed'
+          Write-Host "`$instructions_covered: $instructions_covered"
+          Write-Host "`$instructions_missed: $instructions_missed"
+          
           Write-Host '$instructions_covered: $instructions_covered'
           Write-Host '$instructions_missed: $instructions_missed'
           
