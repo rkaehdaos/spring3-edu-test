@@ -105,6 +105,7 @@ tasks.named('test') {
     finalizedBy jacocoTestCoverageVerification
 }
 tasks.named('nativeTest') {
+    dependsOn test
     finalizedBy jacocoTestCoverageVerification
 }
 
