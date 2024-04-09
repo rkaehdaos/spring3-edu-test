@@ -21,7 +21,7 @@ jobs:
       - name: test
         run: |
           echo "Available processors: $(nproc)"
-          gradle test jacocoTestCoverageVerification --no-daemon --parallel
+          gradle test --no-daemon --stacktrace --parallel
 
       - name: Extract coverage info and update step summary
         run: |
