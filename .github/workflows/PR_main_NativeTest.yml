@@ -1,4 +1,4 @@
-name: 'main PR시엔 nativeTest를 합니다.'
+name: 'NativeTest On PR'
 on:
   pull_request:
     branches: [ main ]
@@ -9,7 +9,7 @@ jobs:
     runs-on: ${{ matrix.os }}
     strategy:
       matrix:
-        os: [windows-latest]
+        os: [ubuntu-latest, linux-latest, windows-latest]
     steps:
       - name: Checkout source code
         uses: actions/checkout@master
@@ -26,7 +26,7 @@ jobs:
       - name: Gradle nativeTest
         run: |
           echo "Available processors: $(nproc)"
-          gradle test jacocoTestCoverageVerification --no-daemon --parallel
+          gradle nativeTest --no-daemon --stacktrace --parallel
 
       - name: Extract coverage info and update step summary(For Windows)
         if: matrix.os == 'windows-latest'
