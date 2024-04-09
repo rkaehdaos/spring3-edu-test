@@ -101,7 +101,12 @@ dependencyManagement {
 tasks.named('test') {
     useJUnitPlatform() // Junit5 사용: 테스트 종속성에 JUnit Jupiter API와 JUnit Jupiter Engine을 포함해야 함.
     maxParallelForks = Runtime.runtime.availableProcessors()
+    finalizedBy jacocoTestReport
 }
+tasks.named('nativeTest') {
+    finalizedBy jacocoTestReport
+}
+
 
 hibernate {
     enhancement {
@@ -115,6 +120,7 @@ graalvmNative {
         }
         test {
             verbose = true
+
         }
         configureEach {
             buildArgs.add("-H:-CheckToolchain")
@@ -122,9 +128,7 @@ graalvmNative {
     }
 }
 
-nativeTest {
-//    finalizedBy jacocoTestReport
-}
+
 
 
 jacocoTestReport {
