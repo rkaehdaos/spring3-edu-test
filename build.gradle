@@ -109,32 +109,52 @@ tasks.named('nativeTest') {
 }
 
 
-hibernate {
-    enhancement {
-        enableAssociationManagement.convention(true)
+hibernate { enhancement { enableAssociationManagement.convention(true) } }
+
+import org.apache.tools.ant.taskdefs.condition.Os
+tasks.register('notifyNativeTestComplete', Exec) {
+
+    doLast {
+        if (Os.isFamily(Os.FAMILY_WINDOWS)) {
+            buildArgs.add("& msg ahn nativeTest 끝!")
+            //on windows:
+            commandLine 'cmd', '/c', 'echo windows-cmd'
+        } else if (Os.isFamily(Os.FAMILY_MAC)) {
+            buildArgs.add("& msg ahn nativeTest 끝!")
+        } else if (Os.isFamily(Os.FAMILY_UNIX)) {
+            buildArgs.add("& msg ahn nativeTest 끝!")
+        } else {
+            printf("else!")
+        }
+        //store the output instead of printing to the console:
+        standardOutput = new ByteArrayOutputStream()
+
+        //extension method stopTomcat.output() can be used to obtain the output:
+        ext.output = {
+            return standardOutput.toString()
+        }
     }
 }
+
 graalvmNative {
     binaries {
-        main {
-            verbose = true
-        }
+        main {}
         test {
-            verbose = true
-
+//            buildArgs.add("--parallelism=29") // Thread count, 기본값은 max
+//            메모리 할당 : GRADLE이 판단해서 너무 높거나 하면 알아서 조절
+//            buildArgs.add("-J-Xmx38G") // GIGA
+//            buildArgs.add("-J-XX:MaxRAMPercentage=55.0") // PERCENT
         }
         configureEach {
+            verbose = true
             buildArgs.add("-H:-CheckToolchain")
         }
     }
-    options = ['--parallelism=30']
 }
 
 
 jacocoTestReport {
-    reports {
-        csv.setRequired(true)
-    }
+    reports { csv.setRequired(true) }
 }
 jacocoTestCoverageVerification {
     dependsOn jacocoTestReport
