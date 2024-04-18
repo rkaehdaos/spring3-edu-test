@@ -4,6 +4,9 @@ on:
     types: [opened,reopened,synchronize]
     branches: [ main ]
 
+permissions:
+  issues: write
+
 jobs:
   PR_NativeTest:
     name: Native Test on ${{ matrix.os }}
