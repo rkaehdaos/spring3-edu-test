@@ -2,10 +2,6 @@ name: 'NativeTest On PR'
 on:
   pull_request:
     types: [opened,reopened,synchronize]
-    branches: [ main ]
-
-permissions:
-  issues: write
 
 jobs:
   PR_NativeTest:
@@ -27,7 +23,7 @@ jobs:
           native-image-job-reports: 'true'
           cache: 'gradle'
 
-      - name: Gradle nativeTest
+      - name: 'Gradle native test'
         run: |
           echo "Available processors: $(nproc)"
           gradle nativeTest --no-daemon --stacktrace --parallel
