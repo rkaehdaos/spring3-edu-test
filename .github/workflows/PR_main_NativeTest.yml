@@ -3,6 +3,8 @@ on:
   pull_request:
     types: [opened,reopened,synchronize]
 
+permissions: write-all
+
 jobs:
   PR_NativeTest:
     name: Native Test on ${{ matrix.os }}
@@ -93,7 +95,6 @@ jobs:
           cat PR_summary.md >> $GITHUB_STEP_SUMMARY
 
       - name: 'PR Comment에 SUMMARY Report 작성'
-        if: github.repository == 'rkaehdaos/spring3-edu-test'
         uses: peter-evans/create-or-update-comment@v4
         with:
           token: ${{ secrets.GITHUB_TOKEN }}
