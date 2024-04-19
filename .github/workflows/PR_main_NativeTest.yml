@@ -30,7 +30,7 @@ jobs:
           echo "Available processors: $(nproc)"
           gradle check nativeTest --no-daemon --stacktrace --parallel
 
-      - name: '커버리지 정보 및 요약'
+      - name: '커버리지 정보 및 요약- Non Window'
         shell: bash
         run: |
           echo 'CSV 파일에서 커버리지 정보 추출';
@@ -56,6 +56,59 @@ jobs:
           echo "## JaCoCo 커버리지 요약" >> PR_summary.md
           echo "- Instruction Coverage: $instruction_coverage" >> PR_summary.md
           echo "- Branch Coverage: $branch_coverage" >> PR_summary.md
+
+      - name: '커버리지 정보 및 요약- 윈도우 전용'
+        if: matrix.os == 'windows-latest'
+        shell: pwsh
+        run: |
+          Write-Host 'CSV 파일에서 커버리지 정보 추출'
+          
+          $content = Get-Content "build/reports/jacoco/test/jacocoTestReport.csv" -Raw
+          Write-Host '변수 확인'
+
+          $lines = $content -split "\r?\n"
+          $instructions_covered = 0
+          $instructions_missed = 0
+          $branches_covered = 0
+          $branches_missed = 0
+          
+          foreach ($line in $lines) {
+            if ($line -match '^\d+,\d+,\d+,\d+,\d+,\d+,\d+') {
+              $fields = $line -split ","
+              $instructions_covered += [int]$fields[4]
+              $instructions_missed += [int]$fields[3]
+              $branches_covered += [int]$fields[6]
+              $branches_missed += [int]$fields[5]
+            }
+          }
+          
+          $total_instructions = $instructions_covered + $instructions_missed
+          $total_branches = $branches_covered + $branches_missed
+          
+          Write-Host '변수 확인'
+          Write-Host "`$instructions_covered: $instructions_covered"
+          Write-Host "`$instructions_missed: $instructions_missed"
+          Write-Host "`$branches_covered: $branches_covered"
+          Write-Host "`$branches_missed: $branches_missed"
+          
+          Write-Host '커버리지 계산'
+          Write-Host '분모가 0일 경우, 커버리지를 'N/A'로 설정'
+          if ($total_instructions -eq 0) {
+            $instruction_coverage = "N/A"
+          } else {
+            $instruction_coverage = [math]::Round(($instructions_covered / $total_instructions * 100), 2)
+          }
+          if ($total_branches -eq 0) {
+            $branch_coverage = "N/A"
+          } else {
+            $branch_coverage = [math]::Round(($branches_covered / $total_branches * 100), 2)
+          }
+          
+          Write-Host 'GITHUB_STEP_SUMMARY에 커버리지 정보 추가'
+          $summary = "JaCoCo 커버리지 요약`n"
+          $summary += "Instruction Coverage: $instruction_coverage`n"
+          $summary += "Branch Coverage: $branch_coverage`n"
+          Add-Content -Path $env:GITHUB_STEP_SUMMARY -Value $summary
 
       - name: 'PMD 리포트 요약'
         shell: bash
