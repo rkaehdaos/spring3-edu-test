@@ -26,7 +26,7 @@ jobs:
       - name: 'Gradle native test'
         run: |
           echo "Available processors: $(nproc)"
-          gradle nativeTest --no-daemon --stacktrace --parallel
+          gradle check nativeTest --no-daemon --stacktrace --parallel
 
       - name: '커버리지 정보 및 요약'
         shell: bash
