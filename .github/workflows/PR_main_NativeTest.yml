@@ -31,6 +31,7 @@ jobs:
           gradle check nativeTest --no-daemon --stacktrace --parallel
 
       - name: '커버리지 정보 및 요약- Non Window'
+        if: matrix.os != 'windows-latest'
         shell: bash
         run: |
           echo 'CSV 파일에서 커버리지 정보 추출';
@@ -51,7 +52,7 @@ jobs:
           else
             branch_coverage=$(echo "scale=2; $branches_covered / $total_branches * 100" | bc)%
           fi
-          echo '# GitHub Action Summary' >> PR_summary.md
+          echo '# GitHub Action Summary (${{ matrix.os }})' >> PR_summary.md
           echo 'GITHUB_STEP_SUMMARY에 커버리지 정보 추가';
           echo "## JaCoCo 커버리지 요약" >> PR_summary.md
           echo "- Instruction Coverage: $instruction_coverage" >> PR_summary.md
@@ -105,9 +106,10 @@ jobs:
           }
           
           Write-Host 'GITHUB_STEP_SUMMARY에 커버리지 정보 추가'
-          $summary = "JaCoCo 커버리지 요약`n"
-          $summary += "Instruction Coverage: $instruction_coverage`n"
-          $summary += "Branch Coverage: $branch_coverage`n"
+          $summary = "# GitHub Action Summary (${{ matrix.os }})`n"
+          $summary += "## JaCoCo 커버리지 요약`n"
+          $summary += "- Instruction Coverage: $instruction_coverage`n"
+          $summary += "- Branch Coverage: $branch_coverage`n"
           Add-Content -Path $env:GITHUB_STEP_SUMMARY -Value $summary
 
       - name: 'PMD 리포트 요약'
