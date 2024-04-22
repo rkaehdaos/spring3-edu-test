@@ -113,6 +113,7 @@ jobs:
           $summary += "- Instruction Coverage: $instruction_coverage`n"
           $summary += "- Branch Coverage: $branch_coverage`n"
           Add-Content -Path $env:GITHUB_STEP_SUMMARY -Value $summary
+          Add-Content -Path PR_summary.md -Value $summary
 
       - name: 'PMD 리포트 요약'
         shell: bash
@@ -171,8 +172,8 @@ jobs:
         uses: 8398a7/action-slack@v3
         if: always()
         with:
-          status: ${{ job.status }}
-          author_name: my workflow bot
+          status: '${{matrix.os}} workflow status: ${{ job.status }}'
+          author_name: nativeTest-${{matrix.os}}-workflow bot
           fields: repo,message,commit,author,eventName,ref,workflow,job,took,
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
