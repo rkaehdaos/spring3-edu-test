@@ -1,7 +1,8 @@
 plugins {
     id 'java'
     id 'jacoco'
-    id 'org.springframework.boot' version '3.2.4'
+    id 'pmd'
+    id 'org.springframework.boot' version '3.2.5'
     id 'io.spring.dependency-management' version '1.1.4'
     id 'org.hibernate.orm' version '6.4.4.Final'
     id 'org.graalvm.buildtools.native' version '0.10.1'
@@ -11,6 +12,7 @@ group = 'com.example'
 version = '0.0.1-SNAPSHOT'
 
 java {
+    toolchain { languageVersion = JavaLanguageVersion.of(21) }
     sourceCompatibility = JavaVersion.VERSION_21
 }
 
@@ -21,7 +23,13 @@ configurations {
 }
 
 repositories {
+//    mavenLocal()
     mavenCentral()
+//    maven { url "http://repo.spring.io/release" }
+//    maven { url "http://repo.spring.io/snapshot" }
+//    maven { url "https://repo.spring.io/libs-snapshot" }
+//    maven { url "http://repo.spring.io/milestone" }
+//    maven { url "https://repo.spring.io/libs-milestone" }
     gradlePluginPortal()
 }
 
@@ -97,40 +105,61 @@ dependencyManagement {
 // - lazy task 구성 : 실제 실행되거나 다른 task에 의해 실제로 참조 될 때까지 구성 연기
 // - 빌드 성능 향상 가능, task  의존성 복잡한 대규모 유리
 
+tasks.named('compileJava') {
+    dependsOn clean
+}
+
+// pmd
+pmd {
+    toolVersion = "7.0.0"
+    consoleOutput = true
+    ignoreFailures = true
+    incrementalAnalysis = true
+    ruleSets = []
+    ruleSetFiles = files(rootProject.file(".github/pmd/ruleset.xml") as Object)
+}
+tasks.named('pmdMain') {
+    includes = ['**/*']
+//    ruleSetFiles = files(rootProject.file(".github/pmd/ruleset.xml") as Object)
+}
+
+tasks.named('pmdTest') {
+    excludes = ['**/*']
+}
 
 tasks.named('test') {
+    dependsOn pmdMain
     useJUnitPlatform() // Junit5 사용: 테스트 종속성에 JUnit Jupiter API와 JUnit Jupiter Engine을 포함해야 함.
     maxParallelForks = Runtime.runtime.availableProcessors()
+    finalizedBy jacocoTestCoverageVerification
+}
+tasks.named('nativeTest') {
+    dependsOn test
+    finalizedBy jacocoTestCoverageVerification
 }
 
-hibernate {
-    enhancement {
-        enableAssociationManagement.convention(true)
-    }
-}
+
+hibernate { enhancement { enableAssociationManagement.convention(true) } }
+
 graalvmNative {
     binaries {
-        main {
-            verbose = true
-        }
+        main {}
         test {
-            verbose = true
+//            buildArgs.add("--parallelism=29") // Thread count, 기본값은 max
+//            메모리 할당 : GRADLE이 판단해서 너무 높거나 하면 알아서 조절
+//            buildArgs.add("-J-Xmx38G") // GIGA
+//            buildArgs.add("-J-XX:MaxRAMPercentage=55.0") // PERCENT
         }
         configureEach {
+            verbose = true
             buildArgs.add("-H:-CheckToolchain")
         }
     }
 }
 
-nativeTest {
-//    finalizedBy jacocoTestReport
-}
-
 
 jacocoTestReport {
-    reports {
-        csv.setRequired(true)
-    }
+    reports { csv.setRequired(true) }
 }
 jacocoTestCoverageVerification {
     dependsOn jacocoTestReport

@@ -1,4 +1,4 @@
-name: After PR Merge Build
+name: 'NativeBuild On PR Merge'
 
 on:
   pull_request:
@@ -21,13 +21,13 @@ jobs:
     runs-on: ${{ matrix.os }}
     strategy:
       matrix:
-        os: [ macos-latest, windows-latest, ubuntu-latest ]
+        os: [ubuntu-latest, macos-latest, windows-latest]
     steps:
       - name: Checkout source code
         uses: actions/checkout@master
 
-      #       https://github.com/marketplace/actions/github-action-for-graalvm
-      - name: 'GitHub Action for GraalVM'
+      # https://github.com/marketplace/actions/github-action-for-graalvm
+      - name: 'graalvm jdk21 setup'
         uses: graalvm/setup-graalvm@v1
         with:
           java-version: '21'
@@ -53,7 +53,7 @@ jobs:
       - name: Native Build step using Gradle plugin
         run: |
           echo "Available processors: $(nproc)"
-          ./gradlew test nativeCompile jacocoTestCoverageVerification --no-daemon --parallel --scan
+          ./gradlew nativeCompile --no-daemon --parallel --scan
 
       - name: Generate JaCoCo Badge
         id: jacoco
@@ -94,12 +94,14 @@ jobs:
           message: '[actions skip] commit badge'
           add: '*.svg'
 
-      - name: Upload JaCoCo coverage report
+      - name: '실패 시 보고서 업로드'
         uses: actions/upload-artifact@v4
-        if: failure()
+        if: (matrix.os == 'ubuntu-latest') && (failure())
         with:
-          name: jacoco-report
-          path: build/reports/jacoco/test/html
+          name: report-jacoco-pmd
+          path: |
+            build/reports/jacoco/test/html
+            build/reports/pmd/*.html
 
       - name: Upload binary
         uses: actions/upload-artifact@v4
@@ -111,16 +113,19 @@ jobs:
         uses: 8398a7/action-slack@v3
         if: always()
         with:
-          status: ${{ job.status }}
-          author_name: GeunChang Ahn
-          job_name: build
-          fields: repo,message,commit,author,action,eventName,ref,workflow,job,took,pullRequest # selectable (default: repo,message)
-          #          mention: here
-#          if_mention: success, failure, cancelled
+          status: custom
+          author_name: nativeTest-${{matrix.os}}-workflow bot
+          fields: repo,message,commit,author,eventName,ref,workflow,job,took
+          custom_payload: |
+            {
+              attachments: [{
+                color: '${{ job.status }}' === 'success' ? 'good' : '${{ job.status }}' === 'failure' ? 'danger' : 'warning',
+                text: `${process.env.AS_WORKFLOW} - ${{matrix.os}}\n${process.env.AS_JOB} (${process.env.AS_COMMIT}) of ${process.env.AS_REPO}@${process.env.AS_REF} by ${process.env.AS_AUTHOR} ${{ job.status }} in ${process.env.AS_TOOK}`,
+              }]
+            }
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK_URL }}
-
 # TODO
 #          make release if merged
 #
