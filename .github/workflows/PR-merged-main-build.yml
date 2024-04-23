@@ -1,4 +1,4 @@
-name: After PR Merge Build
+name: 'NativeBuild On PR Merge'
 
 on:
   pull_request:
@@ -21,13 +21,13 @@ jobs:
     runs-on: ${{ matrix.os }}
     strategy:
       matrix:
-        os: [ macos-latest, windows-latest, ubuntu-latest ]
+        os: [ubuntu-latest, macos-latest, windows-latest]
     steps:
       - name: Checkout source code
         uses: actions/checkout@master
 
-      #       https://github.com/marketplace/actions/github-action-for-graalvm
-      - name: 'GitHub Action for GraalVM'
+      # https://github.com/marketplace/actions/github-action-for-graalvm
+      - name: 'graalvm jdk21 setup'
         uses: graalvm/setup-graalvm@v1
         with:
           java-version: '21'
