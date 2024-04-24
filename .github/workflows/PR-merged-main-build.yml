@@ -17,7 +17,7 @@ on:
 jobs:
   build:
     name: Native Build on ${{ matrix.os }}
-    if: github.event.pull_request.merged == true
+#    if: github.event.pull_request.merged == true
     runs-on: ${{ matrix.os }}
     strategy:
       matrix:
@@ -58,6 +58,7 @@ jobs:
       - name: Generate JaCoCo Badge
         id: jacoco
         uses: cicirello/jacoco-badge-generator@v2.11.0
+        if: matrix.os == 'ubuntu-latest'
         with:
           jacoco-csv-file: build/reports/jacoco/test/jacocoTestReport.csv
           generate-coverage-badge: true
@@ -89,6 +90,7 @@ jobs:
 
       - name: Commit and push the badge (if it changed)
         uses: EndBug/add-and-commit@v9
+        if: matrix.os == 'ubuntu-latest'
         with:
           default_author: github_actions
           message: '[actions skip] commit badge'
