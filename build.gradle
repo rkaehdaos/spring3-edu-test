@@ -110,7 +110,7 @@ tasks.named('compileJava') {
 
 // pmd
 pmd {
-    toolVersion = "7.0.0"
+    toolVersion = "7.4.0"
     consoleOutput = true
     ignoreFailures = true
     incrementalAnalysis = true
