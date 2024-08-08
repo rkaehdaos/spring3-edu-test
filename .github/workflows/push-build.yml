@@ -29,6 +29,8 @@ jobs:
           ./gradlew build --no-daemon --stacktrace --parallel
 
       - name: '커버리지 정보 및 요약'
+        if: matrix.os != 'windows'
+        shell: bash
         run: |
           echo 'CSV 파일에서 커버리지 정보 추출';
           awk -F',' 'NR > 1 {instructions_covered += $5; instructions_missed += $4; branches_covered += $7; branches_missed += $6} END {print instructions_covered, instructions_missed, branches_covered, branches_missed}' build/reports/jacoco/test/jacocoTestReport.csv > coverage.txt
