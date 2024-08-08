@@ -1,4 +1,4 @@
-name: Gradle test On GitHub Action
+name: Gradle Push Build On GitHub Action
 on:
   push:
     branches-ignore: [ 'main' ]
@@ -8,7 +8,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: '소스 checkout'
-        uses: actions/checkout@master
+        uses: actions/checkout@4
 
       - name: 'jdk21 setup'
         uses: actions/setup-java@v4
@@ -20,7 +20,7 @@ jobs:
       - name: 'gradle test'
         run: |
           echo "Available processors: $(nproc)"
-          gradle test --no-daemon --stacktrace --parallel
+          ./gradlew build --no-daemon --stacktrace --parallel
 
       - name: '커버리지 정보 및 요약'
         run: |
