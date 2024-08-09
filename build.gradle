@@ -34,7 +34,7 @@ repositories {
 
 ext {
     set('springBootAdminVersion', "3.2.3")
-    set('springModulithVersion', "1.1.3")
+    set('springModulithVersion', "1.2.1")
 }
 
 dependencies {
