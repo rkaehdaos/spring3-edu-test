@@ -9,7 +9,7 @@ plugins {
 }
 
 group = 'com.example'
-version = '0.0.1-2408081455'
+version = '0.0.1-2408081524'
 
 java {
     toolchain { languageVersion = JavaLanguageVersion.of(21) }

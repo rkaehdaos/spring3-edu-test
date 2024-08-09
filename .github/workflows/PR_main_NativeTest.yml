@@ -2,6 +2,9 @@ name: 'NativeTest On PR'
 on:
   pull_request:
     types: [opened,reopened,synchronize]
+    paths-ignore: [ '.github/**' ]
+    tags-ignore: [ 'beta*' ]
+    branches-ignore: [ 'main' ]
 
 permissions:
   issues: write
